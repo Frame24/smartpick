@@ -1,4 +1,4 @@
-FROM docker.io/traefik:2.10
+FROM docker.io/traefik:3.1
 
 # Создаем необходимые директории и устанавливаем права доступа для хранения ACME (если нужно)
 RUN mkdir -p /etc/traefik/acme \
