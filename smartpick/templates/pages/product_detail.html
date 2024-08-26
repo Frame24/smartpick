@@ -1,0 +1,207 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="product-details">
+    <h1 id="product-name"></h1>
+    
+    <!-- Контейнер для изображения и информации -->
+    <div class="product-main-container">
+        <!-- Блок для отображения изображения товара -->
+        <div id="product-image-container">
+            <div id="image-loader" class="loader-container">
+                <div class="loader"></div>
+            </div>
+        </div>
+        
+        <!-- Информация о товаре -->
+        <div class="product-info">
+            <p><strong>Категория:</strong> <span id="product-category"></span></p>
+            <p><strong>Бренд:</strong> <span id="product-brand"></span></p>
+            <p><strong>Артикул производителя:</strong> <span id="product-vendor-code"></span></p>
+            
+            <!-- Описание товара с возможностью развернуть полностью -->
+            <div class="product-description-container">
+                <p><strong>Описание:</strong> <span class="product-description" id="product-description"></span></p>
+                <button class="btn-toggle-description" onclick="toggleDescription()">Развернуть полностью</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Блок с характеристиками товара -->
+    <div class="product-specs">
+        <div id="specs-loader" class="loader-container">
+            <div class="loader"></div>
+        </div>
+        <h3>Характеристики товара:</h3>
+        <ul id="product-options" class="hidden">
+            <!-- Характеристики будут добавлены динамически -->
+        </ul>
+    </div>
+    
+    <div class="review-bar-heading">
+        <div class="heading">
+            <div class="tooltip">?
+                <span class="tooltiptext">Информация о рейтингах и отзывах</span>
+            </div>
+        </div>
+        <div class="heading">
+            <h3>Позитивные аспекты</h3>
+        </div>
+        <div class="heading">
+            <h3>Негативные аспекты</h3>
+        </div>
+    </div>
+
+    <div class="aggregated-reviews">
+        {% if aggregated_reviews %}
+            {% for aggregated_review in aggregated_reviews %}
+            <div class="review-bar">
+                <div class="review-info">
+                    <p><strong>Рейтинг:</strong> {{ aggregated_review.avg_rating|floatformat:1 }}</p>
+                    <p><strong>Кол-во предложений:</strong> {{ aggregated_review.sentence_count }}</p>
+                </div>
+                <div class="review-positive">
+                    <div class="text-container">
+                        {% if aggregated_review.positive_reviews %}
+                            <p>{{ aggregated_review.positive_reviews.0 }}</p>
+                            <div class="more-content">
+                                {% for review in aggregated_review.positive_reviews|slice:'1:15' %}
+                                    <p class="hidden">{{ review }}</p>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p>Позитивные отзывы отсутствуют.</p>
+                        {% endif %}
+                        {% if aggregated_review.positive_reviews|length > 1 %}
+                            <button class="btn-more" onclick="showMore(this)">+</button>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="review-negative">
+                    <div class="text-container">
+                        {% if aggregated_review.negative_reviews %}
+                            <p>{{ aggregated_review.negative_reviews.0 }}</p>
+                            <div class="more-content">
+                                {% for review in aggregated_review.negative_reviews|slice:'1:15' %}
+                                    <p class="hidden">{{ review }}</p>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p>Негативные отзывы отсутствуют.</p>
+                        {% endif %}
+                        {% if aggregated_review.negative_reviews|length > 1 %}
+                            <button class="btn-more" onclick="showMore(this)">+</button>
+                        {% endif %}
+                    </div>
+                </div>
+                
+            </div>
+            {% endfor %}
+        {% else %}
+            <p>Нет доступных агрегированных отзывов.</p>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    function toggleDescription() {
+        const description = document.getElementById('product-description');
+        const button = document.querySelector('.btn-toggle-description');
+        
+        if (description.classList.contains('expanded')) {
+            description.classList.remove('expanded');
+            button.textContent = 'Развернуть полностью';
+        } else {
+            description.classList.add('expanded');
+            button.textContent = 'Свернуть';
+        }
+    }
+    
+    // Функция для извлечения ID товара из URL
+    function extractNmIdFromUrl(url) {
+        const regex = /catalog\/(\d+)\//;  // Регулярное выражение для поиска цифр после "catalog/"
+        const match = url.match(regex);
+        return match ? match[1] : null;  // Возвращает ID, если найден, иначе null
+    }
+
+    async function fetchProductData(nm_id, baskets) {
+        let foundBasket = null;
+        for (const basket of baskets) {
+            const url = `https://basket-${basket}.wb.ru/vol${Math.floor(nm_id / 1e5)}/part${Math.floor(nm_id / 1e3)}/${nm_id}/info/ru/card.json`;
+            try {
+                const response = await fetch(url);
+                if (response.ok) {
+                    foundBasket = basket;  // Сохраняем номер корзины
+                    return { data: await response.json(), basket: foundBasket };  // Возвращаем данные и номер корзины
+                }
+            } catch (error) {
+                console.error(`Error fetching data from basket ${basket}:`, error);
+            }
+        }
+        throw new Error('Data not found in any basket');
+    }
+
+    function displayProductData(data) {
+        document.getElementById('product-category').innerText = data.subj_root_name + " / " + data.subj_name;
+        document.getElementById('product-brand').innerText = data.selling.brand_name;
+        document.getElementById('product-vendor-code').innerText = data.vendor_code;
+        document.getElementById('product-description').innerText = data.description;
+
+        const optionsList = document.getElementById('product-options');
+        optionsList.innerHTML = '';  // Очищаем текущие опции
+        data.options.forEach(option => {
+            const li = document.createElement('li');
+            li.innerHTML = `<strong>${option.name}:</strong> ${option.value}`;
+            optionsList.appendChild(li);
+        });
+
+        // Скрыть лоадер и показать контент
+        document.getElementById('specs-loader').classList.add('hidden');
+        optionsList.classList.remove('hidden');
+    }
+
+    function displayFirstImage(nm_id, basket) {
+        const img = document.createElement('img');
+        img.src = `https://basket-${basket}.wb.ru/vol${Math.floor(nm_id / 1e5)}/part${Math.floor(nm_id / 1e3)}/${nm_id}/images/big/1.webp`;
+        img.alt = 'Product Image';
+        img.className = 'rounded shadow';
+
+        img.onload = function() {
+            document.getElementById('image-loader').classList.add('hidden'); // Скрываем лоадер
+            document.getElementById('product-image-container').appendChild(img);
+        };
+    }
+
+    // Пример использования
+    const productUrl = "{{ product.url }}";  // Берем URL продукта из переменной Django
+    const nm_id = extractNmIdFromUrl(productUrl);
+    const baskets = Array.from({ length: 20 }, (_, i) => String(i + 1).padStart(2, '0'));  // 20 возможных баскетов
+
+    if (nm_id) {
+        fetchProductData(nm_id, baskets)
+            .then(result => {
+                displayProductData(result.data);
+                // Загружаем и отображаем только первое изображение
+                displayFirstImage(nm_id, result.basket);
+            })
+            .catch(error => console.error('Error fetching product data:', error));
+    } else {
+        console.error('Product ID not found in the URL');
+    }
+
+    function showMore(button) {
+      const moreContent = button.previousElementSibling;
+      const hiddenParagraphs = moreContent.querySelectorAll('p.hidden');
+    
+      if (hiddenParagraphs.length > 0) {
+          hiddenParagraphs[0].classList.remove('hidden');
+      }
+    
+      // Если больше нет скрытых параграфов, скрываем кнопку
+      if (moreContent.querySelectorAll('p.hidden').length === 0) {
+          button.classList.add('hidden');
+      }
+    }
+</script>
+{% endblock %}

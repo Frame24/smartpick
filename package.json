@@ -4,6 +4,7 @@
   "devDependencies": {
     "@babel/core": "^7.16.5",
     "@babel/preset-env": "^7.16.5",
+    "@babel/preset-react": "^7.24.7",
     "@popperjs/core": "^2.10.2",
     "autoprefixer": "^10.4.0",
     "babel-loader": "^9.1.2",
@@ -31,11 +32,15 @@
   ],
   "babel": {
     "presets": [
-      "@babel/preset-env"
+      "@babel/preset-env",
+      "@babel/preset-react"
     ]
   },
   "scripts": {
     "dev": "webpack serve --config webpack/dev.config.js",
     "build": "webpack --config webpack/prod.config.js"
+  },
+  "dependencies": {
+    "chart.js": "^4.4.4"
   }
 }

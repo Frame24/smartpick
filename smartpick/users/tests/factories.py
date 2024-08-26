@@ -8,7 +8,7 @@ from factory.django import DjangoModelFactory
 from smartpick.users.models import User
 
 
-class UserFactory(DjangoModelFactory[User]):
+class UserFactory(DjangoModelFactory):
     email = Faker("email")
     name = Faker("name")
 

@@ -7,8 +7,7 @@
 // Variables //
 ///////////////
 
-// Alert colors
-
+// Цвета для alert
 $white: #fff;
 $mint-green: #d6e9c6;
 $black: #000;
@@ -20,9 +19,7 @@ $red: #b94a48;
 // Alerts //
 ////////////
 
-// bootstrap alert CSS, translated to the django-standard levels of
-// debug, info, success, warning, error
-
+// Стили для alert уровней: debug, info, success, warning, error
 .alert-debug {
   background-color: $white;
   border-color: $mint-green;
@@ -34,3 +31,609 @@ $red: #b94a48;
   border-color: $dark-pink;
   color: $red;
 }
+
+// Стили для текста и ссылок логотипа
+.logo-text {
+  font-family: 'Roboto', sans-serif;
+  line-height: 1.1;
+  text-align: center;
+  user-select: none; /* Отключение выделения текста */
+}
+
+.logo-subtext {
+  font-family: 'Roboto', sans-serif;
+  letter-spacing: 0.1em;
+  margin-top: 4px;
+  display: inline-block;
+  text-align: center;
+  width: 100%;
+  user-select: none; /* Отключение выделения текста */
+}
+
+.no-select {
+  user-select: none; /* Отключение выделения текста */
+  cursor: pointer; /* Изменение курсора на указатель */
+}
+
+.logo-link {
+  text-decoration: none; /* Убираем подчеркивание */
+  color: inherit; /* Оставляем цвет как у текста */
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+}
+
+//////////////////
+// Review Styles //
+//////////////////
+
+/* Card style for reviews */
+.review-card {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 24px; /* Увеличение внутреннего отступа */
+    margin-bottom: 24px; /* Увеличение отступа снизу */
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.review-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Optimize spacing for the review section */
+.review-section {
+    margin: 0 auto;
+    max-width: 1200px;
+    padding: 16px;
+}
+
+/* Sticky navigation menu */
+header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background-color: #ffffff;
+}
+
+header .container {
+    padding: 8px 16px;
+}
+
+/* Sticky menu */
+.sticky-menu {
+  position: sticky;
+  top: 0;
+  background-color: #f8f8f8;
+  padding: 10px 0;
+  z-index: 1000;
+}
+
+.sticky-menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  justify-content: space-around;
+}
+
+.sticky-menu ul li a {
+  text-decoration: none;
+  color: #007BFF;
+  padding: 10px 20px;
+}
+
+.sticky-menu ul li a:hover {
+  color: #0056b3;
+}
+
+/* Product details styles */
+.product-details {
+  font-family: 'Roboto', sans-serif;
+}
+
+.product-link {
+  color: #007BFF;
+  text-decoration: none;
+}
+
+.product-link:hover {
+  text-decoration: underline;
+}
+
+/* Review headings */
+/* Лаконичное расположение заголовков */
+.review-headings {
+  display: grid;
+  grid-template-columns: 1fr 2fr 2fr; /* Одна колонка для информации и две для отзывов */
+  align-items: center; /* Выравнивание по центру */
+  text-align: center;
+  margin-bottom: 10px;
+  background-color: #f8f8f8; /* Добавление фона для заголовков */
+  padding: 10px 0;
+  border-bottom: 2px solid #ccc; /* Добавление нижней границы для заголовков */
+}
+
+.heading {
+  font-weight: 500;
+}
+
+/* Общее оформление карточек отзывов */
+.review-card {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  margin-bottom: 24px;
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.review-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Структура отзывов */
+.review-bar-common {
+  display: grid;
+  grid-template-columns: 1fr 2fr 2fr;
+  gap: 20px;
+  padding: 15px;
+  margin-bottom: 20px;
+  position: relative;
+  align-items: start; /* Выравнивание по верхнему краю */
+}
+
+.review-bar-heading {
+  @extend .review-bar-common;
+  margin-bottom: 5px;
+  text-align: center; /* Выравнивание текста заголовков */
+}
+
+.review-bar {
+  @extend .review-bar-common;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.review-info {
+  grid-column: 1;
+  font-size: 0.9em; /* Немного уменьшить текст */
+}
+
+.review-positive, .review-negative {
+  padding: 20px;
+  border-radius: 5px;
+  position: relative;
+  margin-bottom: 16px;
+  font-size: 0.95em; /* Немного уменьшить текст */
+}
+
+/* Специальное оформление для отсутствия аспектов */
+.review-positive p, .review-negative p {
+  font-style: italic;
+  color: #666; /* Серый цвет текста */
+  background-color: #f9f9f9; /* Светлый фон */
+  padding: 10px;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.review-positive p:empty::before, .review-negative p:empty::before {
+  content: "Аспекты отсутствуют.";
+  font-style: italic;
+  color: #999;
+}
+
+.review-positive {
+  grid-column: 2;
+  background-color: #d4edda;
+  border-left: 4px solid #28a745;
+}
+
+.review-negative {
+  grid-column: 3;
+  background-color: #f8d7da;
+  border-left: 4px solid #dc3545;
+}
+
+.text-container {
+  position: relative;
+  padding-right: 30px;
+}
+
+.btn-more {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  font-size: 12px;
+  padding: 5px 8px;
+  cursor: pointer;
+  border-radius: 50%;
+  line-height: 1;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.btn-more:hover {
+  background-color: #0056b3;
+  transform: rotate(90deg);
+}
+
+.hidden {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .review-bar-common {
+      grid-template-columns: 1fr;
+      padding: 10px;
+  }
+
+  .review-positive, .review-negative {
+      margin-bottom: 10px;
+  }
+
+  .review-card {
+      padding: 16px;
+  }
+
+  .review-headings {
+      grid-template-columns: 1fr;
+      padding: 10px;
+  }
+
+  .heading {
+      width: 100%;
+      margin-bottom: 10px;
+  }
+}
+
+/* Стили для подсказок */
+.tooltip {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: #000;
+  color: #fff;
+  text-align: center;
+  border-radius: 5px;
+  padding: 5px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  margin-left: -60px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
+
+/* Оформление блока с изображением товара */
+#product-image-container {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+#product-image-container img {
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+#product-image-container img:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* Оформление заголовков и текста в блоке с информацией о товаре */
+.product-details h1 {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 16px;
+  text-align: center;
+  color: #333;
+}
+
+.product-details p {
+  font-size: 1rem;
+  margin-bottom: 10px;
+  color: #555;
+}
+
+/* Оформление характеристик товара */
+.product-specs {
+  background-color: #f8f8f8;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 24px;
+}
+
+.product-specs h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #333;
+}
+
+.product-specs ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.product-specs ul li {
+  font-size: 1rem;
+  padding: 8px 0;
+  border-bottom: 1px solid #ddd;
+  color: #444;
+}
+
+.product-specs ul li:last-child {
+  border-bottom: none;
+}
+
+/* Мобильная оптимизация */
+@media (max-width: 768px) {
+  .product-details h1 {
+    font-size: 1.5rem;
+  }
+
+  .product-specs h3 {
+    font-size: 1.25rem;
+  }
+
+  .product-specs ul li {
+    font-size: 0.95rem;
+  }
+}
+
+/* Оформление блока информации о товаре */
+.product-info {
+  background-color: #f0f0f0;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 24px;
+}
+
+.product-info p {
+  font-size: 1rem;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.product-info p strong {
+  color: #007BFF;
+}
+
+/* Описание товара с возможностью развернуть */
+.product-description-container {
+  position: relative;
+}
+
+.product-description {
+  max-height: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: max-height 0.3s ease;
+  margin-bottom: 10px;
+}
+
+.product-description.expanded {
+  max-height: none;
+}
+
+.btn-toggle-description {
+  background-color: #007BFF;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+
+.btn-toggle-description:hover {
+  background-color: #0056b3;
+}
+
+/* Основной контейнер для изображения и информации */
+.product-main-container {
+  display: flex;
+  gap: 20px; /* Отступ между изображением и блоком информации */
+  margin-bottom: 24px;
+}
+
+#product-image-container {
+  flex: 1;
+}
+
+.product-info {
+  flex: 2;
+  background-color: #f0f0f0;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Описание товара с возможностью развернуть */
+.product-description-container {
+  position: relative;
+  padding-right: 100px; /* Отступ справа для кнопки */
+}
+
+.product-description {
+  max-height: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: max-height 0.3s ease;
+  display: inline-block;
+  margin-bottom: 10px;
+  max-width: 800px;
+}
+
+.product-description.expanded {
+  max-height: none;
+}
+
+.btn-toggle-description {
+  background-color: #007BFF;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  transform: translateY(100%); /* Сдвиг кнопки ниже текста */
+}
+
+.btn-toggle-description:hover {
+  background-color: #0056b3;
+}
+
+/* Мобильная оптимизация */
+@media (max-width: 768px) {
+  .product-main-container {
+    flex-direction: column;
+  }
+
+  .btn-toggle-description {
+    transform: translateY(0);
+    margin-top: 10px;
+    position: relative;
+    right: auto;
+  }
+
+  .product-description-container {
+    padding-right: 0; /* Убираем отступ для мобильных устройств */
+  }
+}
+
+/* Стили навигации */
+.nav-link {
+  font-family: 'Roboto', sans-serif;
+  color: #007BFF;
+  text-decoration: none;
+  font-size: 1rem;
+  padding: 10px 15px;
+  transition: color 0.3s, background-color 0.3s;
+}
+
+.nav-link:hover {
+  color: #0056b3;
+}
+
+.nav-link.active {
+  color: #0056b3;
+  font-weight: bold;
+  border-bottom: 2px solid #0056b3;
+}
+
+/* Стили для спиннера загрузки */
+.loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+
+.loader {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-left-color: #007BFF;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Скрываем спиннер, когда контент загружен */
+.hidden {
+  display: none;
+}
+
+/* Описание товара с возможностью развернуть */
+.product-description-container {
+  position: relative;
+  padding-right: 80px; /* Отступ справа для кнопки */
+  padding-bottom: 10px; /* Небольшой отступ снизу */
+}
+
+.product-description {
+  max-height: 100px; /* Ограничение высоты для скрытого текста */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: max-height 0.3s ease;
+  margin-bottom: 10px;
+}
+
+.product-description.expanded {
+  max-height: none; /* Расширяем контейнер на всю высоту текста */
+}
+
+.btn-toggle-description {
+  background-color: #007BFF;
+  color: #fff;
+  border: none;
+  padding: 4px 8px; /* Уменьшение размера кнопки */
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  margin-bottom: 20px; /* Отступ снизу, чтобы кнопка не перекрывала текст */
+}
+
+.btn-toggle-description:hover {
+  background-color: #0056b3;
+}
+
+/* Мобильная оптимизация */
+@media (max-width: 768px) {
+  .btn-toggle-description {
+      transform: translateY(0);
+      margin-top: 10px;
+      position: relative;
+      right: auto;
+      bottom: auto;
+  }
+
+  .product-description-container {
+      padding-right: 0; /* Убираем отступ для мобильных устройств */
+      padding-bottom: 10px;
+  }
+}
+
+.product-description {
+  display: block;
+  max-height: 4.5em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.product-description.expanded {
+  max-height: none;
+  white-space: normal;
+}
+

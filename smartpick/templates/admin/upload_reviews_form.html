@@ -1,0 +1,68 @@
+<!-- smartpick/templates/admin/upload_reviews_form.html -->
+
+{% extends "admin/base_site.html" %}
+{% block content %}
+<h2>Upload Reviews CSV</h2>
+<form id="csv-upload-form" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form }}
+    <button type="submit" class="button">Upload</button>
+</form>
+
+<div id="loading-indicator" style="display:none;">
+    <p>Uploading... Please wait.</p>
+    <progress id="progress-bar" value="0" max="100" style="width:100%;"></progress>
+</div>
+
+<div id="success-message" style="display:none;">
+    <p style="color: green;">File uploaded and processed successfully!</p>
+</div>
+
+<script>
+    document.getElementById('csv-upload-form').onsubmit = function() {
+        var form = document.getElementById('csv-upload-form');
+        var formData = new FormData(form);
+        var xhr = new XMLHttpRequest();
+
+        xhr.open('POST', '', true);
+        xhr.setRequestHeader('X-CSRFToken', form.querySelector('[name=csrfmiddlewaretoken]').value);
+
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                var response = JSON.parse(xhr.responseText);
+                var task_id = response.task_id;
+                checkTaskStatus(task_id);
+            } else {
+                alert('Error during file upload');
+            }
+        };
+
+        xhr.send(formData);
+        return false;
+    };
+
+    function checkTaskStatus(task_id) {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', '/admin/smartpick/productreview/task-status/' + task_id + '/', true);
+
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                var response = JSON.parse(xhr.responseText);
+                var progress = Math.floor((response.current / response.total) * 100);
+                document.getElementById('progress-bar').value = progress;
+
+                if (response.state !== 'SUCCESS') {
+                    setTimeout(function() {
+                        checkTaskStatus(task_id);
+                    }, 1000);
+                } else {
+                    document.getElementById('loading-indicator').style.display = 'none';
+                    document.getElementById('success-message').style.display = 'block';
+                }
+            }
+        };
+
+        xhr.send();
+    }
+</script>
+{% endblock %}
