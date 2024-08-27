@@ -27,16 +27,10 @@ module.exports = {
   ],
   module: {
     rules: [
-      // Обработка .js и .jsx файлов с помощью Babel
+      // we pass the output from babel loader to react-hot loader
       {
-        test: /\.(js|jsx)$/, // Теперь обрабатываем и .js, и .jsx файлы
-        exclude: /node_modules/,
-        use: {
-          loader: 'babel-loader',
-          options: {
-            presets: ['@babel/preset-env', '@babel/preset-react'], // Подключаем необходимые пресеты
-          },
-        },
+        test: /\.js$/,
+        loader: 'babel-loader',
       },
       {
         test: /\.s?css$/i,
