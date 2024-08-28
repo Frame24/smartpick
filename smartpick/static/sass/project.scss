@@ -637,3 +637,13 @@ header .container {
   white-space: normal;
 }
 
+.text-outline {
+  text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
+}
+
+.blur-background {
+  filter: blur(8px);
+}
+.logo-shadow {
+  filter: drop-shadow(2px 2px 3px rgba(0, 0, 0, 0.5));
+}
