@@ -8,7 +8,7 @@ from .views.products_view import *
 from .views.profile_view import *
 from .views.search_results_view import *
 from .views.product_detail_view import *
-from .views.search_results_view import *
+from .views.search_autocomplete_view import *
 
 urlpatterns = [
     path('', index_view, name='home'),
