@@ -8,6 +8,7 @@ from .views.products_view import *
 from .views.profile_view import *
 from .views.search_results_view import *
 from .views.product_detail_view import *
+from .views.search_results_view import *
 
 urlpatterns = [
     path('', index_view, name='home'),
@@ -16,4 +17,5 @@ urlpatterns = [
     path('profile/', profile_view, name='profile'),
     path('search/', search_results, name='search_results'),
     path('product/<int:product_id>/', product_detail, name='product_detail'),
+    path('search-autocomplete/', search_autocomplete, name='search_autocomplete'),
 ]

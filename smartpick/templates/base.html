@@ -35,12 +35,21 @@
 
           <!-- Search Bar -->
           <div id="search-bar-container" class="relative w-80">
-            <input type="text" id="search-input" placeholder="Поиск категорий и товаров..." class="w-full p-2 pr-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            <input 
+                type="text" 
+                id="search-input" 
+                placeholder="Поиск категорий и товаров..." 
+                class="w-full p-2 pr-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                autocomplete="off"
+            />
             <div class="absolute inset-y-0 right-0 flex items-center pr-3">
-              <svg class="h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m1.55-5.15a7.5 7.5 0 11-15 0 7.5 7.5 0 0115 0z" />
-              </svg>
+                <svg class="h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 4a6 6 0 100 12 6 6 0 000-12zM21 21l-5.75-5.75" />
+                </svg>
             </div>
+
+            <!-- Results Container -->
+            <div id="search-results" class="absolute z-50 w-full bg-white shadow-lg mt-2 max-h-60 overflow-y-auto hidden"></div>
           </div>
 
           <!-- Navigation -->
@@ -61,7 +70,6 @@
             </ul>
           </nav>
         </div>
-        <!-- "При поддержке" Link -->
         <a href="https://fasie.ru/" class="absolute top-0 right-0 p-2 bg-gray-200 shadow-lg rounded-md flex items-center space-x-2 text-sm text-gray-800 hover:bg-gray-300 transition duration-300 no-underline">
           <img src="{% static 'images/fasie.png' %}" alt="Фонд содействия инновациям" class="h-8 w-auto" />
           <div class="flex flex-col items-start">
@@ -104,3 +112,30 @@
     {% render_bundle 'vendors' 'js' %}
   </body>
 </html>
+
+<script>
+  document.getElementById('search-input').addEventListener('input', function() {
+      const query = this.value;
+      if (query.length > 1) {
+          fetch(`/search-autocomplete/?q=` + query)
+              .then(response => response.json())
+              .then(data => {
+                  let resultsContainer = document.getElementById('search-results');
+                  resultsContainer.innerHTML = '';
+                  if (data.length > 0) {
+                      resultsContainer.classList.remove('hidden');
+                      data.forEach(item => {
+                          let resultItem = document.createElement('div');
+                          resultItem.classList.add('p-2', 'border-b', 'hover:bg-gray-100');
+                          resultItem.innerHTML = `<a href="${item.url}">${item.name}</a>`;
+                          resultsContainer.appendChild(resultItem);
+                      });
+                  } else {
+                      resultsContainer.classList.add('hidden');
+                  }
+              });
+      } else {
+          document.getElementById('search-results').classList.add('hidden');
+      }
+  });
+</script>

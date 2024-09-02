@@ -12,5 +12,5 @@ def search_results(request):
 
     return render(request, 'pages/search_results.html', {
         'query': query,
-        'results': results
+        'results': results[:10]  # Ограничим количество результатов до 10
     })

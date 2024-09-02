@@ -1,11 +1,13 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.postgres.search import SearchVectorField
 
 class Category(models.Model):
     name = models.CharField(max_length=255, verbose_name="Название категории")
     parent_category = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='subcategories', verbose_name="Родительская категория")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    search_vector = SearchVectorField(null=True)
 
     def __str__(self):
         return self.name
@@ -27,6 +29,7 @@ class Product(models.Model):
     url = models.URLField(verbose_name="URL", null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    search_vector = SearchVectorField(null=True)
 
     def __str__(self):
         return self.name
