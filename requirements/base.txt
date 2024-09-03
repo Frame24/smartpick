@@ -17,7 +17,7 @@ colorama==0.4.6
 crispy-bootstrap5==2024.2
 cron-descriptor==1.4.5
 cryptography==43.0.0
-Django==5.0.8
+Django==5.1
 django-allauth==64.1.0
 django-celery-beat==2.7.0
 django-cors-headers==4.4.0
@@ -82,7 +82,7 @@ django-celery-beat==2.7.0  # https://github.com/celery/django-celery-beat
 flower==2.0.1  # https://github.com/mher/flower
 uvicorn[standard]==0.30.6  # https://github.com/encode/uvicorn
 uvicorn-worker==0.2.0  # https://github.com/Kludex/uvicorn-worker
-Django==5.0.8  # pyup: < 5.1  # https://www.djangoproject.com/
+Django==5.1  # pyup: < 5.1  # https://www.djangoproject.com/
 django-environ==0.11.2  # https://github.com/joke2k/django-environ
 django-model-utils==4.5.1  # https://github.com/jazzband/django-model-utils
 django-allauth[mfa]==64.1.0  # https://github.com/pennersr/django-allauth
