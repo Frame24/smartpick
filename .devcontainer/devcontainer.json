@@ -14,6 +14,11 @@
             "source": "~/.ssh",
             "target": "/home/dev-user/.ssh",
             "type": "bind"
+        },
+        {
+            "source": "${localWorkspaceFolder}/.venv",
+            "target": "/workspace/.venv",
+            "type": "bind"
         }
     ],
     "overrideCommand": false,
@@ -27,7 +32,7 @@
                 "[python]": {
                     "analysis.autoImportCompletions": true,
                     "analysis.typeCheckingMode": "basic",
-                    "defaultInterpreterPath": "/usr/local/bin/python",
+                    "defaultInterpreterPath": "/workspace/.venv/bin/python",
                     "editor.codeActionsOnSave": {
                         "source.organizeImports": "always"
                     },
@@ -35,7 +40,7 @@
                     "languageServer": "Pylance",
                     "linting.enabled": true,
                     "linting.mypyEnabled": true,
-                    "linting.mypyPath": "/usr/local/bin/mypy"
+                    "linting.mypyPath": "/workspace/.venv/bin/mypy"
                 }
             },
             "extensions": [
@@ -50,11 +55,8 @@
             ]
         }
     },
-    // Добавление сетевого подключения
     "runArgs": [
         "--network=smartpick"
     ],
-    // Можно также использовать runServices для запуска конкретных сервисов из docker-compose
-    // "runServices": ["service_name"],
     "postCreateCommand": "cat .devcontainer/bashrc.override.sh >> ~/.bashrc"
 }

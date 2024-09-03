@@ -11,6 +11,10 @@ ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV BUILD_ENV=${BUILD_ENVIRONMENT}
 
+# Create and use virtual environment
+RUN python -m venv /venv
+ENV PATH="/venv/bin:$PATH"
+
 WORKDIR ${APP_HOME}
 
 # Установка необходимых системных зависимостей, включая gcc
