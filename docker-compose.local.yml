@@ -30,10 +30,11 @@ services:
     image: smartpick_production_postgres
     container_name: smartpick_local_postgres
     volumes:
-      - smartpick_local_postgres_data:/var/lib/postgresql/data
-      - smartpick_local_postgres_data_backups:/backups
+      - ./data/postgres:/var/lib/postgresql/data  # Локальная папка на хосте монтируется в контейнер
+      - ./data/postgres_backups:/backups          # Папка для бэкапов
     env_file:
       - ./.envs/.local/.postgres
+
 
   mailpit:
     image: docker.io/axllent/mailpit:latest

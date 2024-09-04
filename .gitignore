@@ -5,6 +5,8 @@ __pycache__/
 *$py.class
 *.safetensors
 *.csv
+data/postgres/base/*
+data/postgres/*
 
 # C extensions
 *.so

@@ -2,11 +2,6 @@ import '../sass/project.scss';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Chart from 'chart.js/auto';
-
-/* Project specific Javascript goes here. */
-
-import React from 'react';
-import ReactDOM from 'react-dom';
 import axios from 'axios';  // Используем axios для выполнения запросов
 
 class SearchBar extends React.Component {
