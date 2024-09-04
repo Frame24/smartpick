@@ -1,15 +1,25 @@
 from ..models import *
-# products_view.py
 from django.core.paginator import Paginator
 from django.http import JsonResponse
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 
-def products_view(request):
+def products_view(request, category_slug=None):
+    # Извлекаем все продукты
     products = Product.objects.all().select_related('category').prefetch_related('reviews')
 
-    # Получаем номер страницы из запроса
+    # Фильтрация по категории, если передан category_slug
+    if category_slug:
+        category = get_object_or_404(Category, slug=category_slug)
+        products = products.filter(category=category)
+
+    # Фильтрация по id товаров, если переданы через GET-запрос
+    product_ids = request.GET.getlist('ids')
+    if product_ids:
+        products = products.filter(id__in=product_ids)
+
+    # Пагинация: 10 товаров на страницу
     page_number = request.GET.get('page', 1)
-    paginator = Paginator(products, 10)  # 10 товаров на страницу
+    paginator = Paginator(products, 10)
     page_obj = paginator.get_page(page_number)
 
     # Формируем данные для каждого товара
@@ -21,22 +31,22 @@ def products_view(request):
         products_data.append({
             'id': product.id,
             'name': product.name,
-            'category': product.category.name,  # Добавляем название категории
+            'category': product.category.name,  # Название категории
             'avg_rating': avg_rating,
             'reviews_count': reviews_count,
-            'url': product.url,  # Проверяем, есть ли ссылка
+            'url': product.url,  # Ссылка на продукт
         })
 
-    # Если это AJAX-запрос, возвращаем только данные товаров в формате JSON
+    # Возвращаем JSON, если запрос выполнен через AJAX
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         return JsonResponse({
             'products': products_data,
             'has_next': page_obj.has_next(),
         })
 
-    # Если это обычный запрос, рендерим страницу с первой порцией товаров
+    # Рендерим HTML-шаблон
     context = {
-        'products_data': products_data,  # Первая порция товаров
-        'has_next': page_obj.has_next(),  # Есть ли ещё страницы
+        'products_data': products_data,
+        'has_next': page_obj.has_next(),
     }
     return render(request, 'pages/products.html', context)
