@@ -5,7 +5,10 @@ import Chart from 'chart.js/auto';
 
 /* Project specific Javascript goes here. */
 
-// SearchBar Component in React
+import React from 'react';
+import ReactDOM from 'react-dom';
+import axios from 'axios';  // Используем axios для выполнения запросов
+
 class SearchBar extends React.Component {
     constructor(props) {
         super(props);
@@ -17,75 +20,83 @@ class SearchBar extends React.Component {
 
         this.handleSearchInput = this.handleSearchInput.bind(this);
         this.handleSearchSubmit = this.handleSearchSubmit.bind(this);
+        this.debouncedFetchSuggestions = this.debounce(this.fetchSuggestions, 300);  // Дебаунс запросов
     }
 
+    // Дебаунс для ограничения частоты запросов
+    debounce(func, wait) {
+        let timeout;
+        return (...args) => {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), wait);
+        };
+    }
+
+    // Асинхронная функция для получения предложений с сервера
+    async fetchSuggestions(query) {
+        if (query.length > 1) {
+            try {
+                const response = await axios.get(`/search-autocomplete/?q=${query}`);
+                this.setState({
+                    suggestions: response.data,  // Ожидаем массив данных от API
+                    showSuggestions: response.data.length > 0,
+                });
+            } catch (error) {
+                console.error('Ошибка при загрузке предложений:', error);
+            }
+        } else {
+            this.setState({ suggestions: [], showSuggestions: false });
+        }
+    }
+
+    // Обработка ввода текста в поле поиска
     handleSearchInput(e) {
-        const query = e.target.value.toLowerCase();
-        const { categories, products } = this.props;
-
-        if (query.length === 0) {
-            this.setState({ 
-                suggestions: [],
-                showSuggestions: false,
-            });
-            return;
-        }
-
-        const filteredCategories = categories.filter(category =>
-            category.toLowerCase().includes(query)
-        ).slice(0, 4);
-
-        const filteredProducts = products.filter(product =>
-            product.toLowerCase().includes(query)
-        ).slice(0, 4);
-
-        const suggestions = [...filteredCategories, ...filteredProducts];
-
-        this.setState({
-            query,
-            suggestions,
-            showSuggestions: suggestions.length > 0,
-        });
+        const query = e.target.value;
+        this.setState({ query });
+        this.debouncedFetchSuggestions(query);  // Вызываем функцию поиска с дебаунсом
     }
 
-    handleSearchSubmit() {
-        if (this.state.query.trim()) {
-            window.location.href = `/search/?q=${this.state.query}`;
-        }
+    // Обработка отправки формы (если необходимо)
+    handleSearchSubmit(e) {
+        e.preventDefault();
+        console.log('Поиск отправлен с запросом:', this.state.query);
     }
 
     render() {
         return (
-            <div className="relative">
-                <input 
-                    type="text" 
-                    placeholder="Поиск категорий и товаров..." 
-                    className="w-full p-2 pr-10 border rounded-lg"
-                    onChange={this.handleSearchInput}
-                    onKeyPress={(e) => { if (e.key === 'Enter') this.handleSearchSubmit(); }}
-                />
-                <button onClick={this.handleSearchSubmit} className="absolute inset-y-0 right-0 flex items-center pr-3">
-                    <svg className="h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35m1.55-5.15a7.5 7.5 0 11-15 0 7.5 7.5 0 0115 0z" />
-                    </svg>
-                </button>
+            <div className="search-bar relative w-80">
+                <form onSubmit={this.handleSearchSubmit}>
+                    <input
+                        type="text"
+                        value={this.state.query}
+                        onChange={this.handleSearchInput}
+                        placeholder="Поиск категорий и товаров..."
+                        className="w-full p-2 pr-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        autocomplete="off"
+                    />
+                    <button type="submit" className="absolute inset-y-0 right-0 flex items-center pr-3">
+                        <svg className="h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17l-5-5m0 0l-5-5m5 5h12" />
+                        </svg>
+                    </button>
+                </form>
+
                 {this.state.showSuggestions && (
-                    <div className="absolute left-0 right-0 mt-2 bg-white shadow-lg rounded-lg">
-                        {this.state.suggestions.length > 0 ? (
-                            this.state.suggestions.map((suggestion, index) => (
-                                <div key={index} className="px-4 py-2 hover:bg-gray-100">
-                                    {suggestion}
-                                </div>
-                            ))
-                        ) : (
-                            <div className="px-4 py-2 text-gray-500">Ничего не найдено</div>
-                        )}
+                    <div id="search-results" className="absolute z-10 bg-white border border-gray-300 rounded-lg mt-1 w-full">
+                        {this.state.suggestions.map((item, index) => (
+                            <div key={index} className="p-2 border-b hover:bg-gray-100">
+                                <a href={item.url}>{item.name}</a>
+                            </div>
+                        ))}
                     </div>
                 )}
             </div>
         );
     }
 }
+
+export default SearchBar;
+
 
 
 
@@ -218,16 +229,13 @@ class SearchBar extends React.Component {
 // Rendering SearchBar
 document.addEventListener("DOMContentLoaded", function() {
     ReactDOM.render(
-        <SearchBar 
-            categories={['Электроника', 'Мода', 'Товары для дома', 'Книги', 'Спорт']} 
-            products={['Телевизор', 'Рубашка', 'Кресло', 'Рюкзак', 'Ноутбук']} 
-        />, 
-        document.getElementById('search-bar-container')
+      <SearchBar />,
+      document.getElementById('search-bar-container')
     );
-
-    // Rendering Dashboard
+  
     ReactDOM.render(<Dashboard />, document.getElementById('dashboard'));
-});
+  });
+  
 
 // Элементы страницы
 function showMore(button) {
