@@ -1,27 +1,7 @@
-# define an alias for the specific python version used in this file.
+# Используем базовый образ Python
 FROM docker.io/python:3.12.5-slim-bookworm AS python
 
-# Python build stage
-FROM python AS python-build-stage
-
-ARG BUILD_ENVIRONMENT=local
-
-# Install apt packages
-RUN apt-get update && apt-get install --no-install-recommends -y \
-  # dependencies for building Python packages
-  build-essential \
-  # psycopg dependencies
-  libpq-dev
-
-# Requirements are installed here to ensure they will be cached.
-COPY ./requirements .
-
-# Create Python Dependency and Sub-Dependency Wheels.
-RUN pip wheel --wheel-dir /usr/src/app/wheels  \
-  -r ${BUILD_ENVIRONMENT}.txt
-
-
-# Python 'run' stage
+# Этап выполнения Python
 FROM python AS python-run-stage
 
 ARG BUILD_ENVIRONMENT=local
@@ -31,38 +11,33 @@ ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV BUILD_ENV=${BUILD_ENVIRONMENT}
 
+# Create and use virtual environment
+RUN python -m venv /venv
+ENV PATH="/venv/bin:$PATH"
+
 WORKDIR ${APP_HOME}
 
-
-# devcontainer dependencies and utils
+# Установка необходимых системных зависимостей, включая gcc
 RUN apt-get update && apt-get install --no-install-recommends -y \
-  sudo git bash-completion nano ssh
+    sudo git bash-completion nano ssh \
+    libpq-dev gettext build-essential gcc \
+    && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+    && rm -rf /var/lib/apt/lists/*
 
-# Create devcontainer user and add it to sudoers
+# Создание пользователя devcontainer и добавление его в sudoers
 RUN groupadd --gid 1000 dev-user \
-  && useradd --uid 1000 --gid dev-user --shell /bin/bash --create-home dev-user \
-  && echo dev-user ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/dev-user \
-  && chmod 0440 /etc/sudoers.d/dev-user
+    && useradd --uid 1000 --gid dev-user --shell /bin/bash --create-home dev-user \
+    && echo dev-user ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/dev-user \
+    && chmod 0440 /etc/sudoers.d/dev-user
 
+# Установка переменной окружения для использования смонтированного виртуального окружения
+ENV VIRTUAL_ENV=/venv
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-# Install required system dependencies
-RUN apt-get update && apt-get install --no-install-recommends -y \
-  # psycopg dependencies
-  libpq-dev \
-  # Translations dependencies
-  gettext \
-  # cleaning up unused files
-  && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
-  && rm -rf /var/lib/apt/lists/*
+# Установка конкретно psycopg-c перед другими зависимостями
+RUN pip install psycopg[c]==3.2.1
 
-# All absolute dir copies ignore workdir instruction. All relative dir copies are wrt to the workdir instruction
-# copy python dependency wheels from python-build-stage
-COPY --from=python-build-stage /usr/src/app/wheels  /wheels/
-
-# use wheels to install python dependencies
-RUN pip install --no-cache-dir --no-index --find-links=/wheels/ /wheels/* \
-  && rm -rf /wheels/
-
+# Копирование и настройка скриптов запуска
 COPY ./compose/production/django/entrypoint /entrypoint
 RUN sed -i 's/\r$//g' /entrypoint
 RUN chmod +x /entrypoint
@@ -70,7 +45,6 @@ RUN chmod +x /entrypoint
 COPY ./compose/local/django/start /start
 RUN sed -i 's/\r$//g' /start
 RUN chmod +x /start
-
 
 COPY ./compose/local/django/celery/worker/start /start-celeryworker
 RUN sed -i 's/\r$//g' /start-celeryworker
@@ -84,8 +58,8 @@ COPY ./compose/local/django/celery/flower/start /start-flower
 RUN sed -i 's/\r$//g' /start-flower
 RUN chmod +x /start-flower
 
-
-# copy application code to WORKDIR
+# Копирование кода приложения в WORKDIR
 COPY . ${APP_HOME}
 
+# Указание точки входа
 ENTRYPOINT ["/entrypoint"]
