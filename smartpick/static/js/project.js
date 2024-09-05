@@ -2,12 +2,59 @@ import '../sass/project.scss';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Chart from 'chart.js/auto';
-
-/* Project specific Javascript goes here. */
-
-import React from 'react';
-import ReactDOM from 'react-dom';
 import axios from 'axios';  // Используем axios для выполнения запросов
+
+let currentPage = 2;  // Начинаем со второй страницы, т.к. первая загружена
+let hasNextPage = document.getElementById('pagination-info').dataset.hasNext === 'true';  // Проверяем, есть ли еще страницы
+let loading = false;
+
+function loadMoreProducts() {
+    if (loading || !hasNextPage) return;
+
+    loading = true;
+    document.getElementById('loading-message').style.display = 'block';  // Показать индикатор загрузки
+
+    fetch(`/products/?page=${currentPage}`, {
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'  // AJAX-запрос
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        const container = document.getElementById('product-container');
+
+        data.products.forEach(product => {
+            const productElement = document.createElement('div');
+            productElement.classList.add('bg-white', 'p-4', 'rounded-lg', 'shadow');
+            productElement.innerHTML = `
+                <h2 class="text-lg font-semibold mb-2">
+                    <a href="/product/${product.id}/" class="text-blue-500 hover:underline">${product.name}</a>
+                </h2>
+                <p class="text-gray-600">Категория: ${product.category}</p>
+                ${product.url ? `<p><a href="${product.url}" class="text-blue-500 hover:underline">Ссылка на продукт</a></p>` : ''}
+                <p>Средний рейтинг: ${product.avg_rating.toFixed(1)} (${product.reviews_count} отзывов)</p>
+            `;
+            container.appendChild(productElement);
+        });
+
+        currentPage++;  // Увеличиваем номер страницы
+        hasNextPage = data.has_next;  // Обновляем флаг, есть ли еще страницы
+        loading = false;
+        document.getElementById('loading-message').style.display = 'none';  // Прячем индикатор загрузки
+    })
+    .catch(error => {
+        console.error('Ошибка загрузки товаров:', error);
+        loading = false;
+    });
+}
+
+// Отслеживаем прокрутку страницы
+window.addEventListener('scroll', () => {
+    if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200 && !loading) {
+        loadMoreProducts();
+    }
+});
+
 
 class SearchBar extends React.Component {
     constructor(props) {

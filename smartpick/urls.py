@@ -18,4 +18,7 @@ urlpatterns = [
     path('search/', search_results, name='search_results'),
     path('product/<int:product_id>/', product_detail, name='product_detail'),
     path('search-autocomplete/', search_autocomplete, name='search_autocomplete'),
+    # Новый маршрут для продуктов по категории
+    path('products/category/<slug:category_slug>/', products_view, name='products_by_category'),
+    
 ]

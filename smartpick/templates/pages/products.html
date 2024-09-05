@@ -5,7 +5,8 @@
 {% block content %}
     <h1 class="text-2xl font-bold mb-4">Товары</h1>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div id="product-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <!-- Изначальная порция товаров -->
         {% for product in products_data %}
             <div class="bg-white p-4 rounded-lg shadow">
                 <h2 class="text-lg font-semibold mb-2">
@@ -19,4 +20,13 @@
             </div>
         {% endfor %}
     </div>
+
+    <!-- Передаем значение has_next в качестве data-атрибута -->
+    <div id="pagination-info" data-has-next="{{ has_next|yesno:'true,false' }}" style="display:none;"></div>
+
+    <!-- Блок для отображения загрузки товаров -->
+    <div id="loading-message" style="text-align: center; display: none;">
+        Загрузка товаров...
+    </div>
 {% endblock %}
+
