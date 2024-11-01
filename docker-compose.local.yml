@@ -30,11 +30,10 @@ services:
     image: smartpick_production_postgres
     container_name: smartpick_local_postgres
     volumes:
-      - ./data/postgres:/var/lib/postgresql/data  # Локальная папка на хосте монтируется в контейнер
-      - ./data/postgres_backups:/backups          # Папка для бэкапов
+      - ./data/postgres:/var/lib/postgresql/data # Локальная папка на хосте монтируется в контейнер
+      - ./data/postgres_backups:/backups # Папка для бэкапов
     env_file:
       - ./.envs/.local/.postgres
-
 
   mailpit:
     image: docker.io/axllent/mailpit:latest
@@ -45,10 +44,9 @@ services:
   redis:
     image: docker.io/redis:6
     container_name: smartpick_local_redis
-    
+
     volumes:
       - smartpick_local_redis_data:/data
-    
 
   celeryworker:
     <<: *django
@@ -95,3 +93,6 @@ services:
     command: npm run dev
     ports:
       - '3000:3000'
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
