@@ -1,4 +1,4 @@
-import '../sass/project.scss';
+import '../../sass/project.scss';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Chart from 'chart.js/auto';

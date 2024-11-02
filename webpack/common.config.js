@@ -6,15 +6,14 @@ module.exports = {
   target: 'web',
   context: path.join(__dirname, '../'),
   entry: {
-    project: path.resolve(__dirname, '../smartpick/static/js/project'),
-    vendors: path.resolve(__dirname, '../smartpick/static/js/vendors'),
+    'smartpick-project': path.resolve(__dirname, '../static/js/smartpick/project'),
+    'smartpick-vendors': path.resolve(__dirname, '../static/js/smartpick/vendors'),
+    'asursoft-project': path.resolve(__dirname, '../static/js/asursoft/project'),
+    'asursoft-vendors': path.resolve(__dirname, '../static/js/asursoft/vendors'),
   },
   output: {
-    path: path.resolve(
-      __dirname,
-      '../smartpick/static/webpack_bundles/',
-    ),
-    publicPath: '/static/webpack_bundles/',
+    path: path.resolve(__dirname, '../static/webpack_bundles/'),  // Общий выходной каталог для бандлов
+    publicPath: '/static/webpack_bundles/',  // Путь для Django к статическим файлам
     filename: 'js/[name]-[fullhash].js',
     chunkFilename: 'js/[name]-[hash].js',
   },
@@ -23,11 +22,21 @@ module.exports = {
       path: path.resolve(path.join(__dirname, '../')),
       filename: 'webpack-stats.json',
     }),
-    new MiniCssExtractPlugin({ filename: 'css/[name].[contenthash].css' }),
+    new MiniCssExtractPlugin({
+      // Создаем отдельные папки для CSS каждого приложения
+      filename: ({ chunk }) => {
+        if (chunk.name.includes('smartpick')) {
+          return 'css/smartpick/[name].[contenthash].css';
+        }
+        if (chunk.name.includes('asursoft')) {
+          return 'css/asursoft/[name].[contenthash].css';
+        }
+        return 'css/[name].[contenthash].css';
+      },
+    }),
   ],
   module: {
     rules: [
-      // we pass the output from babel loader to react-hot loader
       {
         test: /\.js$/,
         loader: 'babel-loader',
