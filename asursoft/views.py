@@ -1,6 +1,8 @@
-# asursoft/views.py
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.conf import settings
 
 def landing(request):
-    return render(request, 'asursoft_landing.html')
+    context = {
+        'bg_image_url': settings.STATIC_URL + 'images/bg.png',
+    }
+    return render(request, 'asursoft_landing.html', context)
