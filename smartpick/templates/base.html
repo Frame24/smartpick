@@ -20,7 +20,7 @@
       <!-- Header -->
       <header class="bg-white shadow">
         <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-          <a href="{% url 'home' %}" class="text-xl font-bold flex flex-col items-start no-select logo-link">
+          <a href="/" class="text-xl font-bold flex flex-col items-start no-select logo-link">
             <div class="logo-text text-4xl font-bold text-gray-900">
               <span class="mr-1">Smart</span>
               <span class="text-blue-600">Pick</span>
@@ -56,7 +56,7 @@
           <nav class="ml-6 sticky-menu">
             <ul class="flex space-x-4">
               <li>
-                <a href="{% url 'home' %}" class="nav-link {% if request.path == '/' %}active{% endif %}">Главная</a>
+                <a href="/" class="nav-link {% if request.path == '/' %}active{% endif %}">Главная</a>
               </li>
               <li>
                 <a href="{% url 'products' %}" class="nav-link {% if request.path == '/products/' %}active{% endif %}">Товары</a>

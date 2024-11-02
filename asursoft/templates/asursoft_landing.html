@@ -1,0 +1,16 @@
+<!-- templates/asursoft_landing.html -->
+{% load render_bundle from webpack_loader %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asursoft Landing</title>
+    {% render_bundle 'asursoft-project' 'css' %}
+</head>
+<body>
+    <div id="root"></div> <!-- React будет рендериться сюда -->
+    {% render_bundle 'asursoft-project' 'js' %}
+    {% render_bundle 'asursoft-vendors' 'js' %}
+</body>
+</html>

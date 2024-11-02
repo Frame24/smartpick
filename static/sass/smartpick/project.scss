@@ -1,7 +1,4 @@
-@import 'custom_bootstrap_vars';
-@import '~bootstrap/scss/bootstrap';
-
-// project specific CSS goes here
+@import '../globals.scss';
 
 ///////////////
 // Variables //
@@ -62,11 +59,6 @@ $red: #b94a48;
   flex-direction: column;
   align-items: start;
 }
-
-//////////////////
-// Review Styles //
-//////////////////
-
 /* Card style for reviews */
 .review-card {
     background-color: #ffffff;

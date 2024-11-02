@@ -2,5 +2,5 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 
-def home(request):
-    return HttpResponse("Добро пожаловать на сайт Asursoft.tech!")
+def landing(request):
+    return render(request, 'asursoft_landing.html')

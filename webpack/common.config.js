@@ -1,29 +1,32 @@
 const path = require('path');
 const BundleTracker = require('webpack-bundle-tracker');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 
 module.exports = {
   target: 'web',
   context: path.join(__dirname, '../'),
+
   entry: {
     'smartpick-project': path.resolve(__dirname, '../static/js/smartpick/project'),
     'smartpick-vendors': path.resolve(__dirname, '../static/js/smartpick/vendors'),
     'asursoft-project': path.resolve(__dirname, '../static/js/asursoft/project'),
     'asursoft-vendors': path.resolve(__dirname, '../static/js/asursoft/vendors'),
   },
+
   output: {
-    path: path.resolve(__dirname, '../static/webpack_bundles/'),  // Общий выходной каталог для бандлов
-    publicPath: '/static/webpack_bundles/',  // Путь для Django к статическим файлам
+    path: path.resolve(__dirname, '../static/webpack_bundles/'),
+    publicPath: '/static/webpack_bundles/',
     filename: 'js/[name]-[fullhash].js',
     chunkFilename: 'js/[name]-[hash].js',
   },
+
   plugins: [
     new BundleTracker({
       path: path.resolve(path.join(__dirname, '../')),
       filename: 'webpack-stats.json',
     }),
     new MiniCssExtractPlugin({
-      // Создаем отдельные папки для CSS каждого приложения
       filename: ({ chunk }) => {
         if (chunk.name.includes('smartpick')) {
           return 'css/smartpick/[name].[contenthash].css';
@@ -35,6 +38,7 @@ module.exports = {
       },
     }),
   ],
+
   module: {
     rules: [
       {
@@ -42,7 +46,7 @@ module.exports = {
         loader: 'babel-loader',
       },
       {
-        test: /\.s?css$/i,
+        test: /\.s[ac]ss$/i,
         use: [
           MiniCssExtractPlugin.loader,
           'css-loader',
@@ -50,17 +54,45 @@ module.exports = {
             loader: 'postcss-loader',
             options: {
               postcssOptions: {
-                plugins: ['postcss-preset-env', 'autoprefixer', 'pixrem'],
+                plugins: [
+                  require('tailwindcss'),
+                  require('autoprefixer'),
+                  'postcss-preset-env',
+                  'pixrem',
+                ],
               },
             },
           },
-          'sass-loader',
+          {
+            loader: 'sass-loader',
+            options: {
+              sassOptions: {
+                quietDeps: true,
+              },
+            },
+          },
         ],
       },
     ],
   },
+
   resolve: {
     modules: ['node_modules'],
-    extensions: ['.js', '.jsx'],
+    extensions: ['.js', '.jsx', '.scss', '.css'],
+  },
+
+  optimization: {
+    minimizer: [
+      `...`,
+      new CssMinimizerPlugin(), // Минификация CSS
+    ],
+  },
+
+  performance: {
+    hints: false,
+  },
+
+  stats: {
+    warnings: false,
   },
 };
