@@ -23,8 +23,9 @@ tls:
 
 http:
   routers:
+    # Django router for smart-pick.ru and asursoft.tech
     web-secure-router:
-      rule: 'Host(`smart-pick.ru`) || Host(`www.smart-pick.ru`)'
+      rule: 'Host(`smart-pick.ru`) || Host(`www.smart-pick.ru`) || Host(`asursoft.tech`) || Host(`www.asursoft.tech`)'
       entryPoints:
         - web-secure
       middlewares:
@@ -32,15 +33,17 @@ http:
       service: django
       tls: {}
 
+    # Flower router for smart-pick.ru and asursoft.tech
     flower-secure-router:
-      rule: 'Host(`smart-pick.ru`)'
+      rule: 'Host(`smart-pick.ru`) || Host(`asursoft.tech`)'
       entryPoints:
         - flower
       service: flower
       tls: {}
 
+    # Media router for smart-pick.ru and asursoft.tech
     web-media-router:
-      rule: '(Host(`smart-pick.ru`) || Host(`www.smart-pick.ru`)) && PathPrefix(`/media/`)'
+      rule: '(Host(`smart-pick.ru`) || Host(`www.smart-pick.ru`) || Host(`asursoft.tech`) || Host(`www.asursoft.tech`)) && PathPrefix(`/media/`)'
       entryPoints:
         - web-secure
       middlewares:
