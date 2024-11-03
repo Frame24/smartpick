@@ -1,7 +1,7 @@
 volumes:
   production_postgres_data: {}
   production_postgres_data_backups: {}
-  production_traefik_acme: {}
+  production_traefik_acme: {}  # Хранение сертификатов от Let's Encrypt
   production_traefik_certs: {}
   production_django_media: {}
   production_redis_data: {}
@@ -41,7 +41,7 @@ services:
     depends_on:
       - django
     volumes:
-      - production_traefik_acme:/etc/traefik/acme
+      - production_traefik_acme:/letsencrypt  # Привязка volume для хранения acme.json
       - production_traefik_certs:/etc/traefik/certs
     ports:
       - '0.0.0.0:80:80'

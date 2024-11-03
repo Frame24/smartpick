@@ -16,10 +16,13 @@ entryPoints:
   flower:
     address: ':5555'
 
-tls:
-  certificates:
-    - certFile: /etc/traefik/certs/fullchain.crt
-      keyFile: /etc/traefik/certs/certificate.key
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      email: hks9@yandex.ru  # Ваш email для уведомлений от Let's Encrypt
+      storage: /letsencrypt/acme.json  # Хранение сертификатов
+      httpChallenge:
+        entryPoint: web
 
 http:
   routers:
@@ -31,7 +34,8 @@ http:
       middlewares:
         - csrf
       service: django
-      tls: {}
+      tls:
+        certResolver: letsencrypt  # Используем Let's Encrypt для сертификатов
 
     # Flower router for smart-pick.ru and asursoft.tech
     flower-secure-router:
@@ -39,7 +43,8 @@ http:
       entryPoints:
         - flower
       service: flower
-      tls: {}
+      tls:
+        certResolver: letsencrypt  # Используем Let's Encrypt для сертификатов
 
     # Media router for smart-pick.ru and asursoft.tech
     web-media-router:
@@ -49,7 +54,8 @@ http:
       middlewares:
         - csrf
       service: django-media
-      tls: {}
+      tls:
+        certResolver: letsencrypt  # Используем Let's Encrypt для сертификатов
 
   middlewares:
     csrf:

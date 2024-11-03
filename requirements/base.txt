@@ -25,3 +25,23 @@ django-cors-headers==4.4.0  # https://github.com/adamchainz/django-cors-headers
 # DRF-spectacular for api documentation
 drf-spectacular==0.27.2  # https://github.com/tfranzel/drf-spectacular
 django-webpack-loader==3.1.0  # https://github.com/django-webpack/django-webpack-loader
+
+
+pandas
+numpy
+scikit-learn
+#torch
+#torchvision 
+#transformers
+#torchaudio
+spacy
+nltk
+tqdm
+annoy
+sentence-transformers
+datasets
+regex
+gdown
+pyarrow
+#dask
+#nvidia-cuda-runtime-cu12

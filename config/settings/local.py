@@ -15,7 +15,7 @@ SECRET_KEY = env(
     default="688JF3IlENNpSKQYigTvLjWaNs6JYdD8RfjDJjiw4NFZbBi7LTKf2npB8n5VdStW",
 )
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1", "smart-pick.local", "asursoft.local"]  # noqa: S104
+ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1", "smart-pick.local", "asursoft.local", "smart-pick.ru", "asursoft.tech"]  # noqa: S104
 
 SITE_DOMAIN = "smart-pick.local"  # или "asursoft.local" в зависимости от тестируемого домена
 

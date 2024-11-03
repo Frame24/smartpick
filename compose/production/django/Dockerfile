@@ -1,12 +1,20 @@
-FROM docker.io/node:20-bookworm-slim AS client-builder
+FROM docker.io/node:22-bookworm-slim AS client-builder
 
 ARG APP_HOME=/app
 WORKDIR ${APP_HOME}
 
+# Установка corepack для поддержки Yarn
+RUN corepack enable
+
+# Копирование и установка зависимостей с помощью Yarn
 COPY ./package.json ${APP_HOME}
-RUN npm install && npm cache clean --force
+COPY yarn.lock ${APP_HOME}
+RUN yarn install --verbose && yarn cache clean
+
 COPY . ${APP_HOME}
-RUN npm run build
+RUN chmod +x node_modules/.bin/webpack
+RUN yarn run build
+
 # define an alias for the specific python version used in this file.
 FROM docker.io/python:3.12.5-slim-bookworm AS python
 
