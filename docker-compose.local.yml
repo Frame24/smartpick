@@ -80,6 +80,7 @@ services:
     command: /start-flower
 
   node:
+    privileged: true
     build:
       context: .
       dockerfile: ./compose/local/node/Dockerfile
@@ -90,7 +91,6 @@ services:
     volumes:
       - .:/app:z
       - /app/node_modules
-      - ./static/webpack_bundles:/app/static/webpack_bundles:z # добавлено монтирование для бандлов
     command: yarn dev
     ports:
       - '3000:3000'

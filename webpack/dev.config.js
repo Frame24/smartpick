@@ -22,18 +22,33 @@ module.exports = merge(commonConfig, {
         runtimeErrors: true,
       },
     },
-    hot: true, // Включаем горячую замену модулей (HMR)
-    liveReload: true,
-    allowedHosts: ['smart-pick.local'], // Разрешаем доступ для домена
+    hot: true, // Горячая замена модулей (HMR)
+    liveReload: true, // Перезагрузка при изменении файлов
+    allowedHosts: ['smart-pick.local'], // Разрешение домена
 
-    // Новая настройка для отслеживания файлов
     watchFiles: {
-      paths: ['/app/static/**/*'], // Укажите путь к отслеживаемым файлам
+      paths: ['/app/static/**/*'], // Путь к отслеживаемым файлам
       options: {
-        usePolling: true,
-        interval: 1000, // Интервал проверки изменений в миллисекундах
+        usePolling: true, // Поллинг для стабильности на Windows
+        interval: 2000, // Интервал проверки изменений
       },
     },
   },
+  watchOptions: {
+    poll: 2000, // Поллинг Webpack (дублируем для совместимости с ядром)
+    ignored: /node_modules/, // Исключаем папку node_modules из отслеживания
+  },
+  infrastructureLogging: {
+    level: 'info', // Логирование инфраструктуры
+  },
+  stats: {
+
+    all: false,
+
+    assets: true,
+
+    errors: true,
+
+    warnings: true,
+  },
 });
-console.log("Webpack Dev Server configuration:", module.exports);

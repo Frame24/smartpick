@@ -29,11 +29,12 @@
         </noscript>
     </div>
 
-    <!-- Django поддержка для контента без React -->
+    {% comment %} <!-- Django поддержка для контента без React -->
     {% block content %}
-    {% endblock %}
+    {% endblock %} {% endcomment %}
     
     <!-- Подключение Webpack-бандлов React -->
+    {% render_bundle 'smartpick-styles' 'css' %}
     {% render_bundle 'smartpick-project' 'js' %}
     {% render_bundle 'smartpick-vendors' 'js' %}
 </body>

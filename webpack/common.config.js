@@ -3,8 +3,6 @@ const BundleTracker = require('webpack-bundle-tracker');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 
-console.log("Configuring Webpack...");
-
 module.exports = {
   target: 'web',
   context: path.join(__dirname, '../'),
@@ -14,6 +12,8 @@ module.exports = {
     'smartpick-vendors': path.resolve(__dirname, '../static/js/smartpick/vendors'),
     'asursoft-project': path.resolve(__dirname, '../static/js/asursoft/project'),
     'asursoft-vendors': path.resolve(__dirname, '../static/js/asursoft/vendors'),
+    'asursoft-styles': path.resolve(__dirname, '../static/sass/asursoft/project.scss'),
+    'smartpick-styles': path.resolve(__dirname, '../static/sass/smartpick/project.scss'),
   },
 
   output: {
@@ -31,7 +31,6 @@ module.exports = {
     }),
     new MiniCssExtractPlugin({
       filename: ({ chunk }) => {
-        console.log("Generating CSS bundle for:", chunk.name);
         if (chunk.name.includes('smartpick')) {
           return 'css/smartpick/[name].[contenthash].css';
         }
@@ -99,5 +98,3 @@ module.exports = {
     warnings: false,
   },
 };
-
-console.log("Webpack common configuration:", module.exports);
