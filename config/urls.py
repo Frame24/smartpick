@@ -14,6 +14,7 @@ from rest_framework.authtoken.views import obtain_auth_token
 # Маршруты для smart-pick
 smartpick_patterns = [
     path("", include("smartpick.urls")),
+    path('api/', include('smartpick.api.urls')),
     path("users/", include("smartpick.users.urls", namespace="users")),
     path("accounts/", include("allauth.urls")),
 ]
