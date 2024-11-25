@@ -4,6 +4,9 @@ const commonConfig = require('./common.config');
 module.exports = merge(commonConfig, {
   mode: 'development',
   devtool: 'inline-source-map',
+  output: {
+    publicPath: 'http://localhost:3000/static/webpack_bundles/',
+  },
   devServer: {
     port: 3000,
     proxy: [
@@ -19,8 +22,18 @@ module.exports = merge(commonConfig, {
         runtimeErrors: true,
       },
     },
-    // We need hot=false (Disable HMR) to set liveReload=true
-    hot: false,
+    hot: true, // Включаем горячую замену модулей (HMR)
     liveReload: true,
+    allowedHosts: ['smart-pick.local'], // Разрешаем доступ для домена
+
+    // Новая настройка для отслеживания файлов
+    watchFiles: {
+      paths: ['/app/static/**/*'], // Укажите путь к отслеживаемым файлам
+      options: {
+        usePolling: true,
+        interval: 1000, // Интервал проверки изменений в миллисекундах
+      },
+    },
   },
 });
+console.log("Webpack Dev Server configuration:", module.exports);

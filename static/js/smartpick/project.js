@@ -2,299 +2,150 @@ import '../../sass/smartpick/project.scss';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Chart from 'chart.js/auto';
-import axios from 'axios';  // Используем axios для выполнения запросов
+import axios from 'axios'; // Используем axios для выполнения запросов
 
-let currentPage = 2;  // Начинаем со второй страницы, т.к. первая загружена
-let hasNextPage = document.getElementById('pagination-info').dataset.hasNext === 'true';  // Проверяем, есть ли еще страницы
+let currentPage = 2; // Начинаем со второй страницы, т.к. первая загружена
+let hasNextPage = false;
 let loading = false;
 
+// Функция для подгрузки дополнительных товаров
 function loadMoreProducts() {
-    if (loading || !hasNextPage) return;
+  if (loading || !hasNextPage) return;
 
-    loading = true;
-    document.getElementById('loading-message').style.display = 'block';  // Показать индикатор загрузки
+  loading = true;
+  const loadingMessage = document.getElementById('loading-message');
+  if (loadingMessage) loadingMessage.style.display = 'block'; // Показать индикатор загрузки
 
-    fetch(`/products/?page=${currentPage}`, {
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest'  // AJAX-запрос
-        }
-    })
+  fetch(`/products/?page=${currentPage}`, {
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest', // AJAX-запрос
+    },
+  })
     .then(response => response.json())
     .then(data => {
-        const container = document.getElementById('product-container');
-
+      const container = document.getElementById('product-container');
+      if (container) {
         data.products.forEach(product => {
-            const productElement = document.createElement('div');
-            productElement.classList.add('bg-white', 'p-4', 'rounded-lg', 'shadow');
-            productElement.innerHTML = `
-                <h2 class="text-lg font-semibold mb-2">
-                    <a href="/product/${product.id}/" class="text-blue-500 hover:underline">${product.name}</a>
-                </h2>
-                <p class="text-gray-600">Категория: ${product.category}</p>
-                ${product.url ? `<p><a href="${product.url}" class="text-blue-500 hover:underline">Ссылка на продукт</a></p>` : ''}
-                <p>Средний рейтинг: ${product.avg_rating.toFixed(1)} (${product.reviews_count} отзывов)</p>
-            `;
-            container.appendChild(productElement);
+          const productElement = document.createElement('div');
+          productElement.classList.add('bg-white', 'p-4', 'rounded-lg', 'shadow');
+          productElement.innerHTML = `
+            <h2 class="text-lg font-semibold mb-2">
+              <a href="/product/${product.id}/" class="text-blue-500 hover:underline">${product.name}</a>
+            </h2>
+            <p class="text-gray-600">Категория: ${product.category}</p>
+            ${product.url ? `<p><a href="${product.url}" class="text-blue-500 hover:underline">Ссылка на продукт</a></p>` : ''}
+            <p>Средний рейтинг: ${product.avg_rating.toFixed(1)} (${product.reviews_count} отзывов)</p>
+          `;
+          container.appendChild(productElement);
         });
+      }
 
-        currentPage++;  // Увеличиваем номер страницы
-        hasNextPage = data.has_next;  // Обновляем флаг, есть ли еще страницы
-        loading = false;
-        document.getElementById('loading-message').style.display = 'none';  // Прячем индикатор загрузки
+      currentPage++; // Увеличиваем номер страницы
+      hasNextPage = data.has_next; // Обновляем флаг, есть ли еще страницы
+      loading = false;
+      if (loadingMessage) loadingMessage.style.display = 'none'; // Прячем индикатор загрузки
     })
     .catch(error => {
-        console.error('Ошибка загрузки товаров:', error);
-        loading = false;
+      console.error('Ошибка загрузки товаров:', error);
+      loading = false;
     });
 }
 
-// Отслеживаем прокрутку страницы
-window.addEventListener('scroll', () => {
+// Обработчик прокрутки страницы для подгрузки товаров
+document.addEventListener('DOMContentLoaded', () => {
+  const paginationInfo = document.getElementById('pagination-info');
+  hasNextPage = paginationInfo && paginationInfo.dataset.hasNext === 'true';
+
+  window.addEventListener('scroll', () => {
     if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200 && !loading) {
-        loadMoreProducts();
+      loadMoreProducts();
     }
+  });
+
+  // Рендеринг компонента SearchBar после загрузки DOM
+  ReactDOM.render(<SearchBar />, document.getElementById('search-bar-container'));
 });
 
-
 class SearchBar extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            query: '',
-            suggestions: [],
-            showSuggestions: false,
-        };
+  constructor(props) {
+    super(props);
+    this.state = {
+      query: '',
+      suggestions: [],
+      showSuggestions: false,
+    };
 
-        this.handleSearchInput = this.handleSearchInput.bind(this);
-        this.handleSearchSubmit = this.handleSearchSubmit.bind(this);
-        this.debouncedFetchSuggestions = this.debounce(this.fetchSuggestions, 300);  // Дебаунс запросов
+    this.handleSearchInput = this.handleSearchInput.bind(this);
+    this.handleSearchSubmit = this.handleSearchSubmit.bind(this);
+    this.debouncedFetchSuggestions = this.debounce(this.fetchSuggestions, 300); // Дебаунс запросов
+  }
+
+  debounce(func, wait) {
+    let timeout;
+    return (...args) => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func.apply(this, args), wait);
+    };
+  }
+
+  async fetchSuggestions(query) {
+    if (query.length > 1) {
+      try {
+        const response = await axios.get(`/search-autocomplete/?q=${query}`);
+        this.setState({
+          suggestions: response.data,
+          showSuggestions: response.data.length > 0,
+        });
+      } catch (error) {
+        console.error('Ошибка при загрузке предложений:', error);
+      }
+    } else {
+      this.setState({ suggestions: [], showSuggestions: false });
     }
+  }
 
-    // Дебаунс для ограничения частоты запросов
-    debounce(func, wait) {
-        let timeout;
-        return (...args) => {
-            clearTimeout(timeout);
-            timeout = setTimeout(() => func.apply(this, args), wait);
-        };
-    }
+  handleSearchInput(e) {
+    const query = e.target.value;
+    this.setState({ query });
+    this.debouncedFetchSuggestions(query);
+  }
 
-    // Асинхронная функция для получения предложений с сервера
-    async fetchSuggestions(query) {
-        if (query.length > 1) {
-            try {
-                const response = await axios.get(`/search-autocomplete/?q=${query}`);
-                this.setState({
-                    suggestions: response.data,  // Ожидаем массив данных от API
-                    showSuggestions: response.data.length > 0,
-                });
-            } catch (error) {
-                console.error('Ошибка при загрузке предложений:', error);
-            }
-        } else {
-            this.setState({ suggestions: [], showSuggestions: false });
-        }
-    }
+  handleSearchSubmit(e) {
+    e.preventDefault();
+    console.log('Поиск отправлен с запросом:', this.state.query);
+  }
 
-    // Обработка ввода текста в поле поиска
-    handleSearchInput(e) {
-        const query = e.target.value;
-        this.setState({ query });
-        this.debouncedFetchSuggestions(query);  // Вызываем функцию поиска с дебаунсом
-    }
+  render() {
+    return (
+      <div className="search-bar relative w-80">
+        <form onSubmit={this.handleSearchSubmit}>
+          <input
+            type="text"
+            value={this.state.query}
+            onChange={this.handleSearchInput}
+            placeholder="Поиск категорий и товаров..."
+            className="w-full p-2 pr-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            autoComplete="off"
+          />
+          <button type="submit" className="absolute inset-y-0 right-0 flex items-center pr-3">
+            <svg className="h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17l-5-5m0 0l-5-5m5 5h12" />
+            </svg>
+          </button>
+        </form>
 
-    // Обработка отправки формы (если необходимо)
-    handleSearchSubmit(e) {
-        e.preventDefault();
-        console.log('Поиск отправлен с запросом:', this.state.query);
-    }
-
-    render() {
-        return (
-            <div className="search-bar relative w-80">
-                <form onSubmit={this.handleSearchSubmit}>
-                    <input
-                        type="text"
-                        value={this.state.query}
-                        onChange={this.handleSearchInput}
-                        placeholder="Поиск категорий и товаров..."
-                        className="w-full p-2 pr-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        autocomplete="off"
-                    />
-                    <button type="submit" className="absolute inset-y-0 right-0 flex items-center pr-3">
-                        <svg className="h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17l-5-5m0 0l-5-5m5 5h12" />
-                        </svg>
-                    </button>
-                </form>
-
-                {this.state.showSuggestions && (
-                    <div id="search-results" className="absolute z-10 bg-white border border-gray-300 rounded-lg mt-1 w-full">
-                        {this.state.suggestions.map((item, index) => (
-                            <div key={index} className="p-2 border-b hover:bg-gray-100">
-                                <a href={item.url}>{item.name}</a>
-                            </div>
-                        ))}
-                    </div>
-                )}
-            </div>
-        );
-    }
+        {this.state.showSuggestions && (
+          <div id="search-results" className="absolute z-10 bg-white border border-gray-300 rounded-lg mt-1 w-full">
+            {this.state.suggestions.map((item, index) => (
+              <div key={index} className="p-2 border-b hover:bg-gray-100">
+                <a href={item.url}>{item.name}</a>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
 }
 
 export default SearchBar;
-
-
-
-
-// Dashboard Component in React
-// class Dashboard extends React.Component {
-//     constructor(props) {
-//         super(props);
-//         this.state = {
-//             category: 'all',
-//             reviewsData: {
-//                 labels: ['5 звезд', '4 звезды', '3 звезды', '2 звезды', '1 звезда'],
-//                 datasets: [{
-//                     label: 'Отзывы',
-//                     data: [65, 59, 80, 81, 56],
-//                     backgroundColor: [
-//                         'rgba(75, 192, 192, 0.2)',
-//                         'rgba(54, 162, 235, 0.2)',
-//                         'rgba(255, 206, 86, 0.2)',
-//                         'rgba(255, 99, 132, 0.2)',
-//                         'rgba(153, 102, 255, 0.2)'
-//                     ],
-//                     borderColor: [
-//                         'rgba(75, 192, 192, 1)',
-//                         'rgba(54, 162, 235, 1)',
-//                         'rgba(255, 206, 86, 1)',
-//                         'rgba(255, 99, 132, 1)',
-//                         'rgba(153, 102, 255, 1)'
-//                     ],
-//                     borderWidth: 1
-//                 }]
-//             },
-//             categoryData: {
-//                 labels: ['Электроника', 'Мода', 'Товары для дома', 'Книги', 'Спорт'],
-//                 datasets: [{
-//                     label: 'Популярность категорий',
-//                     data: [55, 49, 70, 71, 46],
-//                     backgroundColor: [
-//                         'rgba(255, 99, 132, 0.2)',
-//                         'rgba(54, 162, 235, 0.2)',
-//                         'rgba(255, 206, 86, 0.2)',
-//                         'rgba(75, 192, 192, 0.2)',
-//                         'rgba(153, 102, 255, 0.2)'
-//                     ],
-//                     borderColor: [
-//                         'rgba(255, 99, 132, 1)',
-//                         'rgba(54, 162, 235, 1)',
-//                         'rgba(255, 206, 86, 1)',
-//                         'rgba(75, 192, 192, 1)',
-//                         'rgba(153, 102, 255, 1)'
-//                     ],
-//                     borderWidth: 1
-//                 }]
-//             }
-//         };
-//     }
-
-//     render() {
-//         return (
-//             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
-//                 <div className="bg-white p-4 rounded-lg shadow">
-//                     <h2 className="text-lg font-semibold mb-2">Анализ отзывов</h2>
-//                     <p className="text-gray-600">Основные метрики по отзывам.</p>
-//                     <ReviewsChart data={this.state.reviewsData} />
-//                 </div>
-//                 <div className="bg-white p-4 rounded-lg shadow">
-//                     <h2 className="text-lg font-semibold mb-2">Категории товаров</h2>
-//                     <p className="text-gray-600">Популярные категории на платформе.</p>
-//                     <CategoryChart data={this.state.categoryData} />
-//                 </div>
-//             </div>
-//         );
-//     }
-// }
-
-// class ReviewsChart extends React.Component {
-//     componentDidMount() {
-//         this.renderChart();
-//     }
-
-//     componentDidUpdate() {
-//         this.renderChart();
-//     }
-
-//     renderChart() {
-//         const ctx = document.getElementById('reviewsChart').getContext('2d');
-//         new Chart(ctx, {
-//             type: 'bar',
-//             data: this.props.data,
-//             options: {
-//                 responsive: true,
-//                 scales: {
-//                     y: {
-//                         beginAtZero: true
-//                     }
-//                 }
-//             }
-//         });
-//     }
-
-//     render() {
-//         return <canvas id="reviewsChart"></canvas>;
-//     }
-// }
-
-// class CategoryChart extends React.Component {
-//     componentDidMount() {
-//         this.renderChart();
-//     }
-
-//     componentDidUpdate() {
-//         this.renderChart();
-//     }
-
-//     renderChart() {
-//         const ctx = document.getElementById('categoryChart').getContext('2d');
-//         new Chart(ctx, {
-//             type: 'pie',
-//             data: this.props.data,
-//             options: {
-//                 responsive: true
-//             }
-//         });
-//     }
-
-//     render() {
-//         return <canvas id="categoryChart"></canvas>;
-//     }
-// }
-
-// Rendering SearchBar
-document.addEventListener("DOMContentLoaded", function() {
-    ReactDOM.render(
-      <SearchBar />,
-      document.getElementById('search-bar-container')
-    );
-  
-    ReactDOM.render(<Dashboard />, document.getElementById('dashboard'));
-  });
-  
-
-// Элементы страницы
-function showMore(button) {
-    const moreContent = button.previousElementSibling;
-    const hiddenParagraphs = moreContent.querySelectorAll('p.hidden');
-  
-    if (hiddenParagraphs.length > 0) {
-        hiddenParagraphs[0].classList.remove('hidden');
-    }
-  
-    // Если больше нет скрытых параграфов, скрываем кнопку
-    if (moreContent.querySelectorAll('p.hidden').length === 0) {
-        button.classList.add('hidden');
-    }
-  }

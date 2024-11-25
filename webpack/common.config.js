@@ -3,6 +3,8 @@ const BundleTracker = require('webpack-bundle-tracker');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 
+console.log("Configuring Webpack...");
+
 module.exports = {
   target: 'web',
   context: path.join(__dirname, '../'),
@@ -21,6 +23,7 @@ module.exports = {
     chunkFilename: 'js/[name]-[hash].js',
   },
 
+
   plugins: [
     new BundleTracker({
       path: path.resolve(path.join(__dirname, '../')),
@@ -28,6 +31,7 @@ module.exports = {
     }),
     new MiniCssExtractPlugin({
       filename: ({ chunk }) => {
+        console.log("Generating CSS bundle for:", chunk.name);
         if (chunk.name.includes('smartpick')) {
           return 'css/smartpick/[name].[contenthash].css';
         }
@@ -75,7 +79,6 @@ module.exports = {
       },
     ],
   },
-
   resolve: {
     modules: ['node_modules'],
     extensions: ['.js', '.jsx', '.scss', '.css'],
@@ -96,3 +99,5 @@ module.exports = {
     warnings: false,
   },
 };
+
+console.log("Webpack common configuration:", module.exports);
