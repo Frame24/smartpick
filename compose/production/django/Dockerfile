@@ -16,7 +16,7 @@ RUN chmod +x node_modules/.bin/webpack
 RUN yarn run build
 
 # define an alias for the specific python version used in this file.
-FROM docker.io/python:3.12.5-slim-bookworm AS python
+FROM docker.io/python:3.12.7-slim-bookworm AS python
 
 # Python build stage
 FROM python AS python-build-stage
