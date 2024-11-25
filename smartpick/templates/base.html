@@ -13,9 +13,8 @@
     <!-- Иконки -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="icon" href="{% static 'images/mini2.ico' %}" type="image/x-icon">
-    
-    <!-- Стили React -->
-    {% render_bundle 'smartpick-project' 'css' %}
+    <!-- Ваши Webpack стили -->
+    {% render_bundle 'smartpick-styles' 'css' %}
 </head>
 <body class="bg-gray-100 text-gray-800">
 
@@ -34,7 +33,6 @@
     {% endblock %} {% endcomment %}
     
     <!-- Подключение Webpack-бандлов React -->
-    {% render_bundle 'smartpick-styles' 'css' %}
     {% render_bundle 'smartpick-project' 'js' %}
     {% render_bundle 'smartpick-vendors' 'js' %}
 </body>

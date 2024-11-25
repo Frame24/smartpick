@@ -1,52 +1,66 @@
 from rest_framework import serializers
-from smartpick.models import Category, Product, Review, AggregatedReview, KeyThought, ProcessedReviewCache
+from smartpick.models import (
+    Category, Product, Review, AggregatedReview, KeyThought, ProcessedReviewCache
+)
+
 
 class CategorySerializer(serializers.ModelSerializer):
-    subcategories = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    subcategories = serializers.PrimaryKeyRelatedField(
+        many=True, read_only=True
+    )  # Используем related_name "subcategories"
 
     class Meta:
         model = Category
-        fields = ['id', 'name', 'parent_category', 'subcategories', 'created_at', 'updated_at', 'search_vector']
+        exclude = []
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    category = CategorySerializer()
-    reviews = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    category = serializers.PrimaryKeyRelatedField(
+        queryset=Category.objects.all()
+    )  # Используем PrimaryKeyRelatedField для связи с категорией
+    reviews = serializers.PrimaryKeyRelatedField(
+        many=True, read_only=True
+    )  # Используем related_name "reviews"
 
     class Meta:
         model = Product
-        fields = ['id', 'name', 'category', 'url', 'created_at', 'updated_at', 'search_vector']
+        exclude = []
 
 
 class ReviewSerializer(serializers.ModelSerializer):
-    product = ProductSerializer()
+    product = serializers.PrimaryKeyRelatedField(
+        queryset=Product.objects.all()
+    )  # Связь с продуктом без вложения всех данных продукта
 
     class Meta:
         model = Review
-        fields = ['id', 'review_full_text', 'review_rating', 'product', 'corrected_text', 'analysed_at', 'created_at', 'updated_at']
+        exclude = []
 
 
 class AggregatedReviewSerializer(serializers.ModelSerializer):
-    product = ProductSerializer()
-    key_thoughts = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    product = serializers.PrimaryKeyRelatedField(
+        queryset=Product.objects.all()
+    )  # Используем PrimaryKey для связи
+    key_thoughts = serializers.PrimaryKeyRelatedField(
+        many=True, read_only=True
+    )  # related_name "key_thoughts"
 
     class Meta:
         model = AggregatedReview
-        fields = ['id', 'avg_rating', 'rating_category', 'product', 'sentence_count', 'mean_distance', 'key_thoughts', 'created_at', 'updated_at']
+        exclude = []
 
 
 class KeyThoughtSerializer(serializers.ModelSerializer):
-    aggregated_review = AggregatedReviewSerializer()
-    review = ReviewSerializer()
-
     class Meta:
         model = KeyThought
-        fields = ['id', 'aggregated_review', 'review', 'thought_text', 'thought_type', 'rank', 'created_at', 'updated_at']
+        exclude = []
 
 
 class ProcessedReviewCacheSerializer(serializers.ModelSerializer):
-    category = CategorySerializer()
+    category = serializers.PrimaryKeyRelatedField(
+        queryset=Category.objects.all()
+    )  # Связь с Category
 
     class Meta:
         model = ProcessedReviewCache
-        fields = ['id', 'category', 'processed_data', 'created_at', 'updated_at']
+        exclude = []

@@ -89,7 +89,7 @@ LOCAL_APPS = [
     "smartpick.users",
     "smartpick",
     # Your stuff: custom apps go here
-    'asursoft',
+    "asursoft",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -152,7 +152,6 @@ MIDDLEWARE = [
 ]
 
 
-
 # STATIC
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#static-root
@@ -161,7 +160,7 @@ STATIC_ROOT = str(BASE_DIR / "staticfiles")
 STATIC_URL = "/static/"
 # https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#std:setting-STATICFILES_DIRS
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',  # Общий static каталог для всего проекта
+    BASE_DIR / "static",  # Общий static каталог для всего проекта
 ]
 # https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#staticfiles-finders
 STATICFILES_FINDERS = [
@@ -262,14 +261,16 @@ LOGGING = {
     },
     "handlers": {
         "console": {
-            "level": "DEBUG",
+            "level": "INFO",  # Уменьшен уровень логирования для консоли
             "class": "logging.StreamHandler",
             "formatter": "verbose",
         },
         "file": {
             "level": "DEBUG",
-            "class": "logging.FileHandler",
+            "class": "logging.handlers.RotatingFileHandler",
             "filename": "django_debug.log",
+            "maxBytes": 10 * 1024 * 1024,  # 10MB
+            "backupCount": 5,  # Хранить последние 5 файлов
             "formatter": "verbose",
         },
     },
@@ -280,12 +281,12 @@ LOGGING = {
     "loggers": {
         "django": {
             "handlers": ["console", "file"],
-            "level": "DEBUG",
+            "level": "INFO",  # В продакшен переключить на WARNING
             "propagate": True,
         },
         "webpack_loader": {
             "handlers": ["console", "file"],
-            "level": "DEBUG",
+            "level": "INFO",  # Для webpack тоже уменьшить уровень
             "propagate": True,
         },
     },
@@ -356,9 +357,19 @@ REST_FRAMEWORK = {
         "rest_framework.authentication.SessionAuthentication",
         "rest_framework.authentication.TokenAuthentication",
     ),
-    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.AllowAny",),
+    "DEFAULT_PERMISSION_CLASSES": (
+        "rest_framework.permissions.AllowAny",  # Измените на IsAuthenticated для защищенных API
+    ),
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 10,
+    "DEFAULT_FILTER_BACKENDS": [
+        "django_filters.rest_framework.DjangoFilterBackend",
+        "rest_framework.filters.SearchFilter",  # Для поиска
+        "rest_framework.filters.OrderingFilter",  # Для сортировки
+    ],
 }
+
 
 # django-cors-headers - https://github.com/adamchainz/django-cors-headers#setup
 CORS_URLS_REGEX = r"^/api/.*$"

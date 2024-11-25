@@ -1,0 +1,23 @@
+{# Умный шаблон для crispy_form.html с улучшенными отступами #}
+
+<form method="get" class="form-inline">
+  <div class="row g-3 align-items-center p-3">
+    {% for field in filter.form %}
+      <div class="col-md-4 col-sm-6">
+        <div class="form-group mb-3">
+          <label for="{{ field.id_for_label }}" class="form-label fw-bold">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}
+            <div class="text-danger mt-1">
+              {{ field.errors|join:", " }}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+    <div class="col-12 mt-3">
+      <button type="submit" class="btn btn-primary me-2">Применить фильтр</button>
+      <a href="?" class="btn btn-secondary">Сбросить</a>
+    </div>
+  </div>
+</form>
