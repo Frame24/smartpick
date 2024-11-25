@@ -13,7 +13,7 @@ const Header = () => {
                     </div>
                     <div className="logo-subtext text-sm text-center mt-1">
                         <span className="text-blue-600 font-bold">&mdash;</span>
-                        CHOOSE WISELY
+                        CHOOSE WISELYasd
                         <span className="text-blue-600 font-bold">&mdash;</span>
                     </div>
                 </a>

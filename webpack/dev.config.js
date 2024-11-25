@@ -3,10 +3,12 @@ const commonConfig = require('./common.config');
 
 module.exports = merge(commonConfig, {
   mode: 'development',
-  devtool: 'inline-source-map',
+  devtool: 'eval-cheap-module-source-map', // Более быстрые sourcemaps
+
   output: {
     publicPath: 'http://localhost:3000/static/webpack_bundles/',
   },
+
   devServer: {
     port: 3000,
     proxy: [
@@ -22,33 +24,46 @@ module.exports = merge(commonConfig, {
         runtimeErrors: true,
       },
     },
-    hot: true, // Горячая замена модулей (HMR)
-    liveReload: true, // Перезагрузка при изменении файлов
-    allowedHosts: ['smart-pick.local'], // Разрешение домена
+    hot: 'only', // Включить HMR только для ошибок
+    liveReload: false, // Отключить полную перезагрузку для ускорения
+    allowedHosts: ['smart-pick.local'],
 
     watchFiles: {
-      paths: ['/app/static/**/*'], // Путь к отслеживаемым файлам
+      paths: ['/app/static/js/**/*', '/app/static/sass/**/*'], // Сужаем пути для отслеживания
       options: {
         usePolling: true, // Поллинг для стабильности на Windows
-        interval: 2000, // Интервал проверки изменений
+        interval: 1000, // Уменьшаем интервал проверки изменений
       },
     },
   },
+
   watchOptions: {
-    poll: 2000, // Поллинг Webpack (дублируем для совместимости с ядром)
-    ignored: /node_modules/, // Исключаем папку node_modules из отслеживания
+    poll: 1000, // Более быстрый поллинг
+    ignored: /node_modules|dist/, // Исключаем node_modules и dist из отслеживания
   },
+
+  cache: {
+    type: 'memory', // Быстрый кэш для разработки
+  },
+
+  optimization: {
+    splitChunks: {
+      chunks: 'async', // Разделяем только асинхронные модули
+      cacheGroups: {
+        default: false, // Отключаем автоматическое создание общих чанков
+      },
+    },
+    runtimeChunk: false, // Отключаем создание runtime чанков для ускорения
+  },
+
   infrastructureLogging: {
-    level: 'info', // Логирование инфраструктуры
+    level: 'info', // Уровень логирования инфраструктуры
   },
+
   stats: {
-
-    all: false,
-
-    assets: true,
-
     errors: true,
-
-    warnings: true,
+    warnings: false, // Отключаем ненужные предупреждения
+    modules: false, // Не показываем информацию о модулях
+    timings: true, // Отображаем только время сборки
   },
 });

@@ -46,7 +46,15 @@ module.exports = {
     rules: [
       {
         test: /\.js$/,
-        loader: 'babel-loader',
+        use: [
+          'thread-loader', // Параллельная обработка
+          {
+            loader: 'babel-loader',
+            options: {
+              cacheDirectory: true,
+            },
+          },
+        ],
       },
       {
         test: /\.s[ac]ss$/i,
