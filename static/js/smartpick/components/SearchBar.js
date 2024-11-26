@@ -60,16 +60,20 @@ const SearchBar = () => {
                 </a>
 
             </div>
-
             {results.length > 0 && (
                 <div className="absolute z-50 w-full bg-white shadow-lg mt-2 max-h-60 overflow-y-auto">
                     {results.map((item) => (
-                        <div key={item.id} className="p-2 border-b hover:bg-gray-100">
-                            <a href={item.url || '#'}>{item.name}</a>
-                        </div>
+                        <a
+                            key={item.id}
+                            href={item.url || '#'}
+                            className="block p-2 border-b hover:bg-gray-100"
+                        >
+                            {item.name}
+                        </a>
                     ))}
                 </div>
             )}
+
         </div>
     );
 };

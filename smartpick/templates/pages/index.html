@@ -1,34 +1,36 @@
-{% extends "base.html" %}
-{% block title %}Главная - Smart Pick{% endblock %}
+{% extends 'base.html' %}
+{% block title %}
+  Главная - Smart Pick
+{% endblock %}
 
 {% block content %}
-    <h1 class="text-2xl font-bold mb-4">Добро пожаловать на главную страницу аналитики отзывов</h1>
+  <h1 class="text-2xl font-bold mb-4">Добро пожаловать на главную страницу аналитики отзывов</h1>
 
-    <!-- Оптимизированная статистика -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div class="bg-white p-3 rounded-lg shadow transform transition-transform hover:scale-105 duration-300">
-            <h2 class="text-md font-semibold mb-1">Категории</h2>
-            <p class="text-gray-600 text-xl font-bold">{{ categories_count }}</p> <!-- Крупный шрифт для числа -->
-            <p class="text-gray-500 text-sm">Всего категорий</p>
-        </div>
-        <div class="bg-white p-3 rounded-lg shadow transform transition-transform hover:scale-105 duration-300">
-            <h2 class="text-md font-semibold mb-1">Товары</h2>
-            <p class="text-gray-600 text-xl font-bold">{{ products_count }}</p> <!-- Крупный шрифт для числа -->
-            <p class="text-gray-500 text-sm">Всего товаров</p>
-        </div>
+  <!-- Оптимизированная статистика -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    <div class="bg-white p-3 rounded-lg shadow transform transition-transform hover:scale-105 duration-300">
+      <h2 class="text-md font-semibold mb-1">Категории</h2>
+      <p class="text-gray-600 text-xl font-bold">{{ categories_count }}</p> <!-- Крупный шрифт для числа -->
+      <p class="text-gray-500 text-sm">Всего категорий</p>
     </div>
+    <div class="bg-white p-3 rounded-lg shadow transform transition-transform hover:scale-105 duration-300">
+      <h2 class="text-md font-semibold mb-1">Товары</h2>
+      <p class="text-gray-600 text-xl font-bold">{{ products_count }}</p> <!-- Крупный шрифт для числа -->
+      <p class="text-gray-500 text-sm">Всего товаров</p>
+    </div>
+  </div>
 
-    <!-- Последние агрегированные отзывы -->
-    <div class="bg-white p-4 rounded-lg shadow">
-        <h2 class="text-md font-semibold mb-4">Последние товары</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {% for review in recent_aggregated_reviews %}
-            <div class="p-4 bg-gray-50 rounded-lg transform transition-transform hover:scale-105 duration-300">
-                <h3 class="text-sm font-semibold">{{ review.product.name }}</h3>
-                <p class="text-gray-600 text-sm">{{ review.key_thought }}</p>
-                <p class="text-gray-500 text-xs">Рейтинг: {{ review.avg_rating }} / 5</p>
-            </div>
-            {% endfor %}
-        </div>
+  <!-- Последние агрегированные отзывы -->
+  <div class="bg-white p-4 rounded-lg shadow">
+    <h2 class="text-md font-semibold mb-4">Последние товары</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {% for review in recent_aggregated_reviews %}
+        <a href="{{ review.product.get_absolute_url }}" class="block p-4 bg-gray-50 rounded-lg transform transition-transform hover:scale-105 duration-300">
+          <h3 class="text-sm font-semibold">{{ review.product.name }}</h3>
+          <p class="text-gray-600 text-sm">{{ review.key_thought }}</p>
+          <p class="text-gray-500 text-xs">Рейтинг: {{ review.avg_rating }} / 5</p>
+        </a>
+      {% endfor %}
     </div>
+  </div>
 {% endblock %}

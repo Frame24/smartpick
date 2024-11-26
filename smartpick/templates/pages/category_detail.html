@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  {{ category.name }}
+{% endblock %}
+
+{% block content %}
+  <div class="p-6 border rounded-lg shadow-lg">
+    <!-- Изображение категории -->
+    {% if category.image %}
+      <img src="{{ category.image.url }}" alt="{{ category.name }}" class="mb-4 rounded-lg" />
+    {% endif %}
+
+    <!-- Название категории -->
+    <h1 class="text-2xl font-bold mb-2">{{ category.name }}</h1>
+
+    <!-- Описание категории -->
+    {% if category.description %}
+      <p class="text-gray-600 mb-4">{{ category.description }}</p>
+    {% endif %}
+
+    <!-- Список товаров -->
+    <div>
+      <h2 class="text-xl font-semibold mb-2">Популярные товары</h2>
+      <ul class="space-y-2">
+        {% for product in products %}
+          <li>
+            <a href="{{ product.get_absolute_url }}" class="block p-2 border rounded-lg hover:bg-gray-100"><span class="font-semibold">{{ product.name }}</span> - {{ product.category.name }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <!-- Ссылка на все товары категории -->
+    <div class="mt-4">
+      <a href="{{ category.get_absolute_url }}" class="inline-block bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Смотреть все товары</a>
+    </div>
+  </div>
+{% endblock %}
