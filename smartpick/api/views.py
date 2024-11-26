@@ -3,10 +3,8 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
-from django.db.models import Avg  # Добавляем этот импорт
+from django.db.models import Avg, Prefetch
 from rest_framework.pagination import PageNumberPagination
-
-
 from smartpick.models import (
     Category, Product, Review, AggregatedReview, KeyThought, ProcessedReviewCache
 )
@@ -15,7 +13,7 @@ from .serializers import (
     AggregatedReviewSerializer, KeyThoughtSerializer, ProcessedReviewCacheSerializer
 )
 
-
+# Улучшение CategoryViewSet
 class CategoryViewSet(ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
@@ -25,7 +23,7 @@ class CategoryViewSet(ModelViewSet):
     ordering_fields = ['name', 'created_at']  # Сортировка по имени и дате создания
     ordering = ['name']  # По умолчанию сортировка по имени
 
-
+# Улучшение ProductViewSet
 class ProductViewSet(ModelViewSet):
     queryset = Product.objects.select_related('category')
     serializer_class = ProductSerializer
@@ -45,7 +43,7 @@ class ProductViewSet(ModelViewSet):
             'avg_rating': round(avg_rating, 2),
         })
 
-
+# Улучшение ReviewViewSet
 class ReviewViewSet(ModelViewSet):
     queryset = Review.objects.select_related('product')
     serializer_class = ReviewSerializer
@@ -62,15 +60,22 @@ class ReviewViewSet(ModelViewSet):
         serialized_reviews = self.get_serializer(reviews, many=True)
         return Response(serialized_reviews.data)
 
-
+# Улучшение AggregatedReviewViewSet
 class AggregatedReviewViewSet(ModelViewSet):
-    queryset = AggregatedReview.objects.select_related('product')
+    queryset = AggregatedReview.objects.select_related('product').prefetch_related(
+        Prefetch('key_thoughts', queryset=KeyThought.objects.only('id', 'thought_text'))
+    )
     serializer_class = AggregatedReviewSerializer
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     filterset_fields = ['product', 'rating_category']  # Фильтрация по продукту и категории рейтинга
     ordering_fields = ['avg_rating', 'mean_distance']  # Сортировка по рейтингу и расстоянию
     ordering = ['avg_rating']  # По умолчанию сортировка по рейтингу
 
+    def get_queryset(self):
+        """Возвращает данные с предвыборкой, чтобы ускорить запросы"""
+        return super().get_queryset()
+
+# Улучшение KeyThoughtViewSet
 class KeyThoughtViewSet(ModelViewSet):
     queryset = KeyThought.objects.select_related('aggregated_review', 'review').only(
         'id', 'thought_text', 'thought_type', 'aggregated_review_id', 'review_id'
@@ -79,14 +84,14 @@ class KeyThoughtViewSet(ModelViewSet):
     filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_fields = ['thought_type', 'aggregated_review']
     search_fields = ['thought_text']
+
     def get_queryset(self):
-        # Если фильтры отсутствуют, возвращаем только первые 5 записей
+        """Обеспечивает возврат данных даже при пустых фильтрах"""
         if not self.request.query_params:
             return super().get_queryset()[:5]
         return super().get_queryset()
 
-
-
+# Улучшение ProcessedReviewCacheViewSet
 class ProcessedReviewCacheViewSet(ModelViewSet):
     queryset = ProcessedReviewCache.objects.select_related('category')
     serializer_class = ProcessedReviewCacheSerializer

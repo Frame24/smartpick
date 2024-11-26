@@ -1,49 +1,73 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import Statistics from '../components/Statistics';
+import RecentAggregatedReviews from '../components/RecentAggregatedReviews';
 
 const Home = () => {
-    const [statistics, setStatistics] = useState({});
+    const [statistics, setStatistics] = useState({
+        total_products: 0,
+        avg_rating: 0,
+    });
     const [recentReviews, setRecentReviews] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        // Загружаем статистику
-        axios.get('/api/statistics/')
-            .then(response => setStatistics(response.data))
-            .catch(error => console.error('Ошибка при загрузке статистики:', error));
-
-        // Загружаем последние отзывы
-        axios.get('/api/recent-reviews/')
-            .then(response => setRecentReviews(response.data))
-            .catch(error => console.error('Ошибка при загрузке отзывов:', error));
+        fetchData();
     }, []);
 
+    const fetchData = async () => {
+        try {
+            console.log("Загрузка данных начата...");
+
+            // Получение статистики
+            const statsResponse = await axios.get('/api/products/statistics/');
+            console.log("Статистика:", statsResponse.data);
+            setStatistics(statsResponse.data);
+
+            // Получение отзывов
+            const reviewsResponse = await axios.get('/api/aggregated-reviews/?ordering=-created_at&limit=4');
+            console.log("Отзывы (сырой ответ):", reviewsResponse.data.results);
+            const reviews = reviewsResponse.data.results;
+
+            // Дополнительные запросы для продуктов и ключевых мыслей
+            const enrichedReviews = await Promise.all(
+                reviews.map(async (review) => {
+                    const productResponse = await axios.get(`/api/products/${review.product}/`);
+                    const product = productResponse.data;
+
+                    const keyThoughts = await Promise.all(
+                        review.key_thoughts.map((id) =>
+                            axios.get(`/api/key-thoughts/${id}/`).then((res) => res.data.thought_text)
+                        )
+                    );
+
+                    return {
+                        ...review,
+                        productName: product.name,
+                        keyThoughts,
+                    };
+                })
+            );
+
+            console.log("Отзывы (обогащенные данные):", enrichedReviews);
+            setRecentReviews(enrichedReviews);
+        } catch (error) {
+            console.error('Ошибка загрузки данных:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
+    if (loading) {
+        return <div className="text-center py-10">Загрузка...</div>;
+    }
+
     return (
-        <div>
+        <div className="container mx-auto px-4 py-6">
             <h1 className="text-2xl font-bold mb-4">Добро пожаловать на главную страницу аналитики отзывов</h1>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                <div className="bg-white p-3 rounded-lg shadow transform transition-transform hover:scale-105 duration-300">
-                    <h2 className="text-md font-semibold mb-1">Категории</h2>
-                    <p className="text-gray-600 text-xl font-bold">{statistics.categories_count || '...'}</p>
-                    <p className="text-gray-500 text-sm">Всего категорий</p>
-                </div>
-                <div className="bg-white p-3 rounded-lg shadow transform transition-transform hover:scale-105 duration-300">
-                    <h2 className="text-md font-semibold mb-1">Товары</h2>
-                    <p className="text-gray-600 text-xl font-bold">{statistics.products_count || '...'}</p>
-                    <p className="text-gray-500 text-sm">Всего товаров</p>
-                </div>
-            </div>
-            <div className="bg-white p-4 rounded-lg shadow">
-                <h2 className="text-md font-semibold mb-4">Последние товары</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {recentReviews.map((review, index) => (
-                        <div key={index} className="p-4 bg-gray-50 rounded-lg transform transition-transform hover:scale-105 duration-300">
-                            <h3 className="text-sm font-semibold">{review.product.name}</h3>
-                            <p className="text-gray-600 text-sm">{review.key_thought}</p>
-                            <p className="text-gray-500 text-xs">Рейтинг: {review.avg_rating} / 5</p>
-                        </div>
-                    ))}
-                </div>
-            </div>
+            <Statistics statistics={statistics} />
+            <RecentAggregatedReviews reviews={recentReviews} />
         </div>
     );
 };
