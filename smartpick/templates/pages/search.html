@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  Результаты поиска
+{% endblock %}
+
+{% block content %}
+  {% if query %}
+    <h1 class="text-2xl font-bold mb-4">Результаты поиска по запросу: "{{ query }}"</h1>
+  {% else %}
+    <h1 class="text-2xl font-bold mb-4">Результаты поиска</h1>
+    <p class="text-gray-500">Вы не указали поисковый запрос.</p>
+  {% endif %}
+
+  {% if error %}
+    <p class="text-red-500">{{ error }}</p>
+  {% endif %}
+
+  {% if results %}
+    <ul class="list-disc pl-5">
+      {% for result in results %}
+        <li class="mb-2">
+          {% if result.url %}
+            <a href="{{ result.url }}" class="text-blue-500 hover:text-blue-700">{{ result.name }}</a>
+          {% else %}
+            {{ result.name }}
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+
+    <div class="mt-4">
+      <nav class="flex justify-between">
+        {% if results.has_previous %}
+          <a href="?q={{ query }}&page={{ results.previous_page_number }}" class="text-blue-500 hover:text-blue-700">← Предыдущая</a>
+        {% endif %}
+
+        {% if results.has_next %}
+          <a href="?q={{ query }}&page={{ results.next_page_number }}" class="text-blue-500 hover:text-blue-700">Следующая →</a>
+        {% endif %}
+      </nav>
+    </div>
+  {% else %}
+    <p class="text-gray-500">Ничего не найдено по вашему запросу.</p>
+  {% endif %}
+{% endblock %}

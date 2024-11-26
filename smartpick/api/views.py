@@ -12,6 +12,20 @@ from .serializers import (
     CategorySerializer, ProductSerializer, ReviewSerializer,
     AggregatedReviewSerializer, KeyThoughtSerializer, ProcessedReviewCacheSerializer
 )
+from rest_framework.views import APIView
+
+
+class SearchAutocompleteView(APIView):
+    def get(self, request):
+        query = request.query_params.get('q', '')
+        if query:
+            # Поиск по категориям и продуктам
+            categories = Category.objects.filter(name__icontains=query).values('id', 'name')
+            products = Product.objects.filter(name__icontains=query).values('id', 'name', 'url')
+            # Объединение результатов
+            results = list(categories) + list(products)
+            return Response(results)
+        return Response([])
 
 # Улучшение CategoryViewSet
 class CategoryViewSet(ModelViewSet):
