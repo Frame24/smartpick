@@ -5,28 +5,20 @@
 {% endblock %}
 
 {% block content %}
-  <!-- Блок технических работ -->
-  <div class="flex items-center justify-center min-h-screen bg-gray-200">
-    <div class="text-center">
-      <h1 class="text-4xl font-bold mb-4">Ведутся технические работы</h1>
-      <p class="text-lg">Пожалуйста, зайдите позже.</p>
-    </div>
+  <h1 class="text-2xl font-bold mb-4">Список категорий</h1>
+
+  <div id="category-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    {% if categories %}
+      {% for category in categories %}
+        <div class="p-4 bg-white rounded-lg shadow hover:bg-gray-50 transition duration-300">
+          <h2 class="text-lg font-bold"><a href="{{ category.get_absolute_url }}" class="text-blue-500 hover:underline">{{ category.name }}</a></h2>
+          <p class="text-gray-600">Подкатегории: {{ category.subcategories_count }}</p>
+          <p class="text-gray-600">Товары: {{ category.products_count }}</p>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p class="text-gray-500">Категории отсутствуют.</p>
+    {% endif %}
   </div>
+  <div id="loading-message" style="text-align: center; display: none;">Загрузка категорий...</div>
 {% endblock %}
-{% comment %} {% block content %}
-  <h1 class="text-2xl font-bold mb-4">Категории</h1>
-
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-    <!-- Ссылка на все товары -->
-    <div class="bg-white p-4 rounded-lg shadow">
-      <h2 class="text-lg font-semibold mb-2"><a href="{% url 'products' %}">Все товары</a></h2>
-    </div>
-
-    {% for category in categories_data %}
-      <div class="bg-white p-4 rounded-lg shadow">
-        <h2 class="text-lg font-semibold mb-2"><a href="{% url 'products_by_category' category.slug %}">{{ category.name }}</a></h2>
-        <p class="text-gray-600">Количество товаров: {{ category.products_count }}</p>
-      </div>
-    {% endfor %}
-  </div>
-{% endblock %} {% endcomment %}
