@@ -28,36 +28,61 @@
 
   <!-- Избранные товары и категории -->
   <div class="bg-white p-4 rounded-lg shadow mb-6">
-    <h2 class="text-lg font-semibold mb-2">Избранные товары и категории</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {% if favorite_products.exists %}
-        {% for product in favorite_products %}
-          <div class="bg-gray-100 p-4 rounded-lg shadow">
-            <h3 class="text-lg font-semibold mb-2">{{ product.name }}</h3>
-            <p class="text-gray-600">Категория: {{ product.category.name }}</p>
-          </div>
-        {% endfor %}
-      {% else %}
-        <p class="text-gray-500">Нет избранных товаров.</p>
-      {% endif %}
+    <h2 class="text-lg font-semibold mb-4">Избранные товары и категории</h2>
 
-      {% if favorite_categories.exists %}
-        {% for category in favorite_categories %}
-          <div class="bg-gray-100 p-4 rounded-lg shadow">
-            <h3 class="text-lg font-semibold mb-2">{{ category.name }}</h3>
-          </div>
-        {% endfor %}
-      {% else %}
-        <p class="text-gray-500">Нет избранных категорий.</p>
-      {% endif %}
-    </div>
+    <!-- Таблица с одинаковой шириной колонок -->
+    <table class="table-auto w-full border-collapse" style="table-layout: fixed;">
+      <thead>
+        <tr>
+          <th class="w-1/2 text-left text-gray-700 font-semibold pb-2">Товары</th>
+          <th class="w-1/2 text-left text-gray-700 font-semibold pb-2 pl-4">Категории</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <!-- Левая колонка: товары -->
+          <td class="align-top pr-4">
+            <div class="space-y-4">
+              <!-- Вертикальные отступы между товарами -->
+              {% if favorite_products.exists %}
+                {% for product in favorite_products %}
+                  <a href="{% url 'product_detail' product.id %}" class="block bg-gray-100 p-4 rounded-lg shadow hover:shadow-md transition-shadow">
+                    <h3 class="text-lg font-semibold mb-2">{{ product.name }}</h3>
+                    <p class="text-gray-600">Категория: {{ product.category.name }}</p>
+                  </a>
+                {% endfor %}
+              {% else %}
+                <p class="text-gray-500">Нет избранных товаров.</p>
+              {% endif %}
+            </div>
+          </td>
+
+          <!-- Правая колонка: категории -->
+          <td class="align-top pl-4">
+            <div class="space-y-4">
+              <!-- Вертикальные отступы между категориями -->
+              {% if favorite_categories.exists %}
+                {% for category in favorite_categories %}
+                  <a href="{% url 'category_detail' category.id %}" class="block bg-gray-100 p-4 rounded-lg shadow hover:shadow-md transition-shadow"><h3 class="text-lg font-semibold">{{ category.name }}</h3></a>
+                {% endfor %}
+              {% else %}
+                <p class="text-gray-500">Нет избранных категорий.</p>
+              {% endif %}
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
   <!-- История просмотров -->
-  <div bg-white p-4 rounded-lg shadow mb-6>
-    <h2>История просмотров</h2>
-    <!-- Кнопка очистки истории -->
-    <button id="clearHistoryButton" class="bg-red-500 text-white px-4 py-2 rounded">Очистить историю</button>
+  <div class="bg-white p-4 rounded-lg shadow mb-6">
+    <div class="flex items-center justify-between mb-4">
+      <h2 class="text-lg font-semibold">История просмотров</h2>
+      <!-- Кнопка очистки истории -->
+      <button id="clearHistoryButton" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition-colors">Очистить историю</button>
+    </div>
+
     {% if analytics_history %}
       <table class="min-w-full bg-white rounded-lg shadow overflow-hidden">
         <thead class="bg-gray-50">

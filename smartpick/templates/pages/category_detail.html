@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 
+{% load static %}
+
 {% block title %}
   {{ category.name }}
 {% endblock %}
@@ -11,8 +13,17 @@
       <img src="{{ category.image.url }}" alt="{{ category.name }}" class="mb-4 rounded-lg" />
     {% endif %}
 
-    <!-- Название категории -->
-    <h1 class="text-2xl font-bold mb-2">{{ category.name }}</h1>
+    <div class="relative">
+      <!-- Название категории -->
+      <div class="flex items-center mb-2">
+        <h1 id="category-name" class="text-2xl font-bold flex items-center">
+          {{ category.name }}
+          <button id="add-to-favorites-button" data-category-id="{{ category.id }}" class="ml-2 bg-transparent text-yellow-500 text-xl p-2 rounded hover:text-yellow-600 focus:outline-none"><i class="fa-star" id="favorite-icon"></i></button>
+        </h1>
+      </div>
+      <!-- Кнопка добавления в избранное -->
+      <button id="add-to-favorites-button" data-category-id="{{ category.id }}" class="absolute top-0 right-0 bg-transparent text-yellow-500 text-xl p-2 rounded hover:text-yellow-600 focus:outline-none"><i class="fa-star" id="favorite-icon"></i></button>
+    </div>
 
     <!-- Список подкатегорий -->
     {% if subcategories %}
@@ -45,4 +56,5 @@
       <a href="{{ category.get_absolute_url }}" class="inline-block bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Смотреть все товары</a>
     </div>
   </div>
+  <script type="module" src="{% static 'js/smartpick/utils/categoryPage.js' %}"></script>
 {% endblock %}
