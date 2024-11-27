@@ -1,4 +1,3 @@
-
 from typing import ClassVar
 
 from django.contrib.auth.models import AbstractUser
@@ -6,6 +5,7 @@ from django.db.models import CharField
 from django.db.models import EmailField
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+from django.db import models
 
 from .managers import UserManager
 
@@ -26,6 +26,20 @@ class User(AbstractUser):
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
+
+    # Дополнительные поля для ЛК
+    favorite_categories = models.ManyToManyField(
+        "smartpick.Category", blank=True, related_name="users", verbose_name="Избранные категории"
+    )
+    favorite_products = models.ManyToManyField(
+        "smartpick.Product", blank=True, related_name="users", verbose_name="Избранные товары"
+    )
+    analytics_history = models.JSONField(
+        verbose_name="История аналитики",
+        null=True,
+        blank=True,
+        help_text="Хранит данные о просмотренных продуктах или категориях.",
+    )
 
     objects: ClassVar[UserManager] = UserManager()
 

@@ -1,20 +1,34 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
-from ..models import Product, Category, AggregatedReview
+from datetime import datetime
+from django.utils.timezone import make_aware
+from datetime import datetime
 
+
+@login_required
 def profile_view(request):
     user = request.user
 
-    # Избранные товары и категории (просто для примера, нужно реализовать избранное в модели)
-    favorite_products = Product.objects.filter(id__in=[1, 2, 3])  # Замените на реальные данные
-    favorite_categories = Category.objects.filter(id__in=[1, 2])  # Замените на реальные данные
+    # Избранные товары и категории
+    favorite_products = user.favorite_products.all()
+    favorite_categories = user.favorite_categories.all()
 
-    # История аналитики
-    analysis_history = AggregatedReview.objects.filter(product__category__in=favorite_categories)
+    # История просмотров: сортировка по дате (обратный порядок)
+    analytics_history = user.analytics_history or []
+    for record in analytics_history:
+        if isinstance(record["timestamp"], str):
+            # Преобразуем строку в datetime
+            record["timestamp"] = datetime.fromisoformat(record["timestamp"])
+
+    analytics_history = sorted(
+        analytics_history, key=lambda record: record["timestamp"], reverse=True
+    )
 
     context = {
-        'user': user,
-        'favorite_products': favorite_products,
-        'favorite_categories': favorite_categories,
-        'analysis_history': analysis_history,
+        "user": user,
+        "favorite_products": favorite_products,
+        "favorite_categories": favorite_categories,
+        "analytics_history": analytics_history,
     }
-    return render(request, 'pages/profile.html', context)
+
+    return render(request, "pages/profile.html", context)

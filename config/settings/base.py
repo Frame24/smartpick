@@ -83,6 +83,10 @@ THIRD_PARTY_APPS = [
     "corsheaders",
     "drf_spectacular",
     "webpack_loader",
+    "allauth.socialaccount.providers.telegram",
+    "allauth.socialaccount.providers.vk",
+    "allauth.socialaccount.providers.yandex",
+    'django_json_widget',
 ]
 
 LOCAL_APPS = [
@@ -233,6 +237,7 @@ EMAIL_BACKEND = env(
 )
 # https://docs.djangoproject.com/en/dev/ref/settings/#email-timeout
 EMAIL_TIMEOUT = 5
+EMAIL_FILE_PATH = "/tmp/emails"  # Укажите директорию для хранения писем
 
 # ADMIN
 # ------------------------------------------------------------------------------
@@ -261,12 +266,12 @@ LOGGING = {
     },
     "handlers": {
         "console": {
-            "level": "INFO",  # Уменьшен уровень логирования для консоли
+            "level": "ERROR",  # Уменьшен уровень логирования для консоли
             "class": "logging.StreamHandler",
             "formatter": "verbose",
         },
         "file": {
-            "level": "DEBUG",
+            "level": "ERROR",
             "class": "logging.handlers.RotatingFileHandler",
             "filename": "django_debug.log",
             "maxBytes": 10 * 1024 * 1024,  # 10MB
@@ -275,19 +280,29 @@ LOGGING = {
         },
     },
     "root": {
-        "level": "INFO",
+        "level": "ERROR",
         "handlers": ["console", "file"],
     },
     "loggers": {
         "django": {
             "handlers": ["console", "file"],
-            "level": "INFO",  # В продакшен переключить на WARNING
+            "level": "ERROR",  # В продакшен переключить на ERROR
             "propagate": True,
         },
         "webpack_loader": {
             "handlers": ["console", "file"],
-            "level": "INFO",  # Для webpack тоже уменьшить уровень
+            "level": "ERROR",  # Для webpack тоже уменьшить уровень
             "propagate": True,
+        },
+        "django.server": {  # Логгер запросов сервера
+            "handlers": ["console", "file"],
+            "level": "ERROR",  # Логировать только ERROR и выше
+            "propagate": False,
+        },
+        "debug_toolbar": {  # Логгер для debug_toolbar
+            "handlers": ["console", "file"],
+            "level": "ERROR",  # Логировать только ошибки
+            "propagate": False,
         },
     },
 }

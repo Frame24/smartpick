@@ -35,17 +35,11 @@
 
           <!-- Search Bar -->
           <div id="search-bar-container" class="relative w-80">
-            <input 
-                type="text" 
-                id="search-input" 
-                placeholder="Поиск категорий и товаров..." 
-                class="w-full p-2 pr-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                autocomplete="off"
-            />
+            <input type="text" id="search-input" placeholder="Поиск категорий и товаров..." class="w-full p-2 pr-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" autocomplete="off" />
             <div class="absolute inset-y-0 right-0 flex items-center pr-3">
-                <svg class="h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 4a6 6 0 100 12 6 6 0 000-12zM21 21l-5.75-5.75" />
-                </svg>
+              <svg class="h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 4a6 6 0 100 12 6 6 0 000-12zM21 21l-5.75-5.75" />
+              </svg>
             </div>
 
             <!-- Results Container -->
@@ -64,9 +58,22 @@
               <li>
                 <a href="{% url 'categories' %}" class="nav-link {% if request.path == '/categories/' %}active{% endif %}">Категории</a>
               </li>
-              <li>
-                <a href="{% url 'profile' %}" class="nav-link {% if request.path == '/profile/' %}active{% endif %}">Личный Кабинет</a>
-              </li>
+
+              {% if user.is_authenticated %}
+                <li>
+                  <a href="{% url 'profile' %}" class="nav-link">Личный кабинет</a>
+                </li>
+                <li>
+                  <a href="{% url 'account_logout' %}" class="nav-link">Выход</a>
+                </li>
+              {% else %}
+                <li>
+                  <a href="{% url 'account_login' %}" class="nav-link">Вход</a>
+                </li>
+                <li>
+                  <a href="{% url 'account_signup' %}" class="nav-link">Регистрация</a>
+                </li>
+              {% endif %}
             </ul>
           </nav>
         </div>

@@ -1,88 +1,88 @@
-{% extends "base.html" %}
-{%load static%}
-{% block title %}Личный Кабинет - Smart Pick{% endblock %}
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}
+  Личный Кабинет - Smart Pick
+{% endblock %}
 
 {% block content %}
-    <h1 class="text-2xl font-bold mb-4">Личный Кабинет</h1>
+  <h1 class="text-2xl font-bold mb-4">Личный Кабинет</h1>
 
-    <!-- Управление профилем -->
-    <div class="bg-white p-4 rounded-lg shadow mb-6">
-        <h2 class="text-lg font-semibold mb-2">Управление профилем</h2>
-        <form>
-            <div class="mb-4">
-                <label class="block text-gray-700">Имя:</label>
-                <input type="text" class="w-full p-2 border rounded-lg" value="{{ user.first_name }}">
-            </div>
-            <div class="mb-4">
-                <label class="block text-gray-700">Электронная почта:</label>
-                <input type="email" class="w-full p-2 border rounded-lg" value="{{ user.email }}">
-            </div>
-            <button class="bg-blue-500 text-white px-4 py-2 rounded">Сохранить изменения</button>
-        </form>
-    </div>
+  <!-- Управление профилем -->
+  <div class="bg-white p-4 rounded-lg shadow mb-6">
+    <h2 class="text-lg font-semibold mb-2">Управление профилем</h2>
+    <form method="post" action="{% url 'users:update' %}">
+      {% csrf_token %}
+      <div class="mb-4">
+        <label class="block text-gray-700">Имя:</label>
+        <input type="text" name="name" class="w-full p-2 border rounded-lg" value="{{ user.name }}" />
+      </div>
+      <div class="mb-4">
+        <label class="block text-gray-700">Электронная почта:</label>
+        <input type="email" name="email" class="w-full p-2 border rounded-lg" value="{{ user.email }}" />
+      </div>
+      <button class="bg-blue-500 text-white px-4 py-2 rounded">Сохранить изменения</button>
+    </form>
+  </div>
 
-    <!-- Избранные товары и категории -->
-    <div class="bg-white p-4 rounded-lg shadow mb-6">
-        <h2 class="text-lg font-semibold mb-2">Избранные товары и категории</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {% for product in favorite_products %}
-                <div class="bg-gray-100 p-4 rounded-lg shadow">
-                    <h3 class="text-lg font-semibold mb-2">{{ product.name }}</h3>
-                    <p class="text-gray-600">Категория: {{ product.category.name }}</p>
-                </div>
-            {% endfor %}
-            {% for category in favorite_categories %}
-                <div class="bg-gray-100 p-4 rounded-lg shadow">
-                    <h3 class="text-lg font-semibold mb-2">{{ category.name }}</h3>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
+  <!-- Избранные товары и категории -->
+  <div class="bg-white p-4 rounded-lg shadow mb-6">
+    <h2 class="text-lg font-semibold mb-2">Избранные товары и категории</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {% if favorite_products.exists %}
+        {% for product in favorite_products %}
+          <div class="bg-gray-100 p-4 rounded-lg shadow">
+            <h3 class="text-lg font-semibold mb-2">{{ product.name }}</h3>
+            <p class="text-gray-600">Категория: {{ product.category.name }}</p>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p class="text-gray-500">Нет избранных товаров.</p>
+      {% endif %}
 
-    <!-- История аналитики -->
-    <div class="bg-white p-4 rounded-lg shadow mb-6">
-        <h2 class="text-lg font-semibold mb-2">История аналитики</h2>
-        <div class="overflow-x-auto">
-            <table class="min-w-full bg-white rounded-lg shadow overflow-hidden">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-4 py-2 text-left text-gray-600">Дата</th>
-                        <th class="px-4 py-2 text-left text-gray-600">Продукт</th>
-                        <th class="px-4 py-2 text-left text-gray-600">Ключевая мысль</th>
-                        <th class="px-4 py-2 text-left text-gray-600">Средний рейтинг</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for analysis in analysis_history %}
-                        <tr class="border-t">
-                            <td class="px-4 py-2">{{ analysis.created_at|date:"d.m.Y" }}</td>
-                            <td class="px-4 py-2">{{ analysis.product.name }}</td>
-                            <td class="px-4 py-2">{{ analysis.key_thought }}</td>
-                            <td class="px-4 py-2">{{ analysis.avg_rating|floatformat:1 }}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+      {% if favorite_categories.exists %}
+        {% for category in favorite_categories %}
+          <div class="bg-gray-100 p-4 rounded-lg shadow">
+            <h3 class="text-lg font-semibold mb-2">{{ category.name }}</h3>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p class="text-gray-500">Нет избранных категорий.</p>
+      {% endif %}
     </div>
+  </div>
 
-    <!-- Настройки уведомлений -->
-    <div class="bg-white p-4 rounded-lg shadow">
-        <h2 class="text-lg font-semibold mb-2">Настройки уведомлений</h2>
-        <form>
-            <div class="mb-4">
-                <label class="flex items-center">
-                    <input type="checkbox" class="form-checkbox" {% if user.profile.notify_trends %}checked{% endif %}>
-                    <span class="ml-2 text-gray-700">Получать уведомления о новых трендах</span>
-                </label>
-            </div>
-            <div class="mb-4">
-                <label class="flex items-center">
-                    <input type="checkbox" class="form-checkbox" {% if user.profile.notify_reviews %}checked{% endif %}>
-                    <span class="ml-2 text-gray-700">Получать уведомления о значительных изменениях в отзывах</span>
-                </label>
-            </div>
-            <button class="bg-blue-500 text-white px-4 py-2 rounded">Сохранить настройки</button>
-        </form>
-    </div>
+  <!-- История просмотров -->
+  <div>
+    <h2>История просмотров</h2>
+    {% if analytics_history %}
+      <table class="min-w-full bg-white rounded-lg shadow overflow-hidden">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-4 py-2 text-left text-gray-600">Дата</th>
+            <th class="px-4 py-2 text-left text-gray-600">Тип</th>
+            <th class="px-4 py-2 text-left text-gray-600">Название</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for record in analytics_history %}
+            <tr class="border-t">
+              <td class="px-4 py-2">{{ record.timestamp|date:'d.m.Y H:i' }}</td>
+              <td class="px-4 py-2">
+                {% if record.type == 'product' %}
+                  Товар
+                {% else %}
+                  Категория
+                {% endif %}
+              </td>
+              <td class="px-4 py-2">{{ record.name }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p class="text-gray-500">Нет записей в истории просмотров.</p>
+    {% endif %}
+  </div>
 {% endblock %}

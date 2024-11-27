@@ -17,8 +17,6 @@ class DynamicURLMiddleware:
         
         host = request.get_host()
         
-        print(f"Current host: {host}")  # Отладка
-        
         if "smart-pick" in host:
             urls.urlpatterns = urls.smartpick_patterns + urls.common_patterns
         elif "asursoft" in host:
@@ -28,7 +26,5 @@ class DynamicURLMiddleware:
 
         clear_url_caches()  # Сброс кэша URL
         response = self.get_response(request)
-        
-        print(f"Current urlpatterns: {urls.urlpatterns}")  # Отладка
         
         return response
