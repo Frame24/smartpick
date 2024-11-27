@@ -45,6 +45,15 @@ document.addEventListener('DOMContentLoaded', () => {
     root.render(<SearchBar />);
   }
 
+  // Загружаем первую порцию продуктов и категорий
+  if (document.getElementById('product-container')) {
+    loadMoreProducts();
+  }
+
+  if (document.getElementById('category-container')) {
+    loadMoreCategories();
+  }
+
   window.addEventListener('scroll', () => {
     if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 200) {
       if (document.getElementById('product-container')) loadMoreProducts();

@@ -7,22 +7,8 @@
 {% block content %}
   <h1 class="text-2xl font-bold mb-4">Товары</h1>
 
-  <div id="product-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-    <!-- Изначальная порция товаров -->
-    {% for product in products_data %}
-      <div class="bg-white p-4 rounded-lg shadow">
-        <h2 class="text-lg font-semibold mb-2"><a href="{% url 'product_detail' product.id %}" class="text-blue-500 hover:underline">{{ product.name }}</a></h2>
-        <a href="{{ product.category.url }}" class="text-blue-500 hover:underline">{{ product.category.name }}</a>
-        
-        {% if product.url %}
-          <p>
-            <a href="{{ product.url }}" class="text-blue-500 hover:underline">Ссылка на продукт</a>
-          </p>
-        {% endif %}
-        <p>Средний рейтинг: {{ product.avg_rating|floatformat:1 }} ({{ product.reviews_count }} отзывов)</p>
-      </div>
-    {% endfor %}
-  </div>
+  <!-- Контейнер для рендеринга React -->
+  <div id="product-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
 
   <!-- Передаем значение has_next в качестве data-атрибута -->
   <div id="pagination-info" data-has-next="{{ has_next|yesno:'true,false' }}" style="display:none;"></div>
