@@ -66,10 +66,9 @@ module.exports = {
             options: {
               postcssOptions: {
                 plugins: [
-                  require('tailwindcss'),
-                  require('autoprefixer'),
-                  'postcss-preset-env',
-                  'pixrem',
+                  require('autoprefixer')(), // Автопрефиксы
+                  require('tailwindcss')(), // Tailwind CSS
+                  require('postcss-preset-env')(), // Полифилы
                 ],
               },
             },

@@ -18,7 +18,6 @@
     "image-minimizer-webpack-plugin": "^4.1.1",
     "mini-css-extract-plugin": "^2.9.2",
     "node-sass-tilde-importer": "^1.0.2",
-    "pixrem": "^5.0.0",
     "postcss": "^8.4.49",
     "postcss-clean": "^1.2.2",
     "postcss-flexbugs-fixes": "^5.0.2",
@@ -59,10 +58,7 @@
     "axios": "^1.7.7",
     "chart.js": "^4.4.4",
     "clean-webpack-plugin": "^4.0.0",
-    "gifsicle": "^7.0.1",
     "imagemin": "^9.0.0",
-    "jpegtran": "^2.0.0",
-    "optipng": "^4.2.0",
     "prop-types": "^15.8.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -72,6 +68,14 @@
     "svgo": "^3.3.2",
     "tailwindcss": "^3.4.15",
     "terser-webpack-plugin": "^5.3.10"
+  },
+  "resolutions": {
+    "got": "^11.8.5",
+    "http-cache-semantics": "^4.1.1",
+    "semver-regex": "^3.1.4",
+    "trim-newlines": "^3.0.1",
+    "cross-spawn": "^6.0.6",
+    "postcss": "^8.4.31"
   },
   "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
