@@ -2,7 +2,6 @@
 
 from django.urls import path
 from django.views.generic import TemplateView
-
 from smartpick.views.category_detail_view import category_detail
 from .views.categories_view import *
 from .views.index_view import *

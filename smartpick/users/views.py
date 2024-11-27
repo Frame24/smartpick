@@ -6,6 +6,10 @@ from django.utils.translation import gettext_lazy as _
 from django.views.generic import DetailView
 from django.views.generic import RedirectView
 from django.views.generic import UpdateView
+from rest_framework.authtoken.models import Token
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 
 from smartpick.users.models import User
 
@@ -14,6 +18,7 @@ class UserDetailView(LoginRequiredMixin, DetailView):
     model = User
     slug_field = "id"
     slug_url_kwarg = "id"
+    template_name = "pages/profile.html"  # Явно указываем шаблон
 
 
 user_detail_view = UserDetailView.as_view()
@@ -28,7 +33,7 @@ class UserUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
         assert self.request.user.is_authenticated  # type guard
         return self.request.user.get_absolute_url()
 
-    def get_object(self, queryset: QuerySet | None=None) -> User:
+    def get_object(self, queryset: QuerySet | None = None) -> User:
         assert self.request.user.is_authenticated  # type guard
         return self.request.user
 
@@ -44,3 +49,15 @@ class UserRedirectView(LoginRequiredMixin, RedirectView):
 
 
 user_redirect_view = UserRedirectView.as_view()
+
+
+@api_view(["GET"])
+def get_auth_token(request):
+    """
+    Возвращает токен авторизации для текущего пользователя.
+    """
+    user = request.user
+    if user.is_authenticated:
+        token, _ = Token.objects.get_or_create(user=user)
+        return Response({"token": token.key})
+    return Response({"error": "User is not authenticated"}, status=403)

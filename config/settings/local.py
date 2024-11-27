@@ -87,3 +87,7 @@ CELERY_TASK_EAGER_PROPAGATES = True
 WEBPACK_LOADER["DEFAULT"]["CACHE"] = not DEBUG
 # Your stuff...
 # ------------------------------------------------------------------------------
+# Отключить ограничения для локальной разработки
+CSRF_COOKIE_HTTPONLY = False  # Разрешить JavaScript доступ к токену
+CSRF_COOKIE_SECURE = False    # Не требовать HTTPS для CSRF токена
+SESSION_COOKIE_SECURE = False # Не требовать HTTPS для сессий

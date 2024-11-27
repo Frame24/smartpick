@@ -54,8 +54,10 @@
   </div>
 
   <!-- История просмотров -->
-  <div>
+  <div bg-white p-4 rounded-lg shadow mb-6>
     <h2>История просмотров</h2>
+    <!-- Кнопка очистки истории -->
+    <button id="clearHistoryButton" class="bg-red-500 text-white px-4 py-2 rounded">Очистить историю</button>
     {% if analytics_history %}
       <table class="min-w-full bg-white rounded-lg shadow overflow-hidden">
         <thead class="bg-gray-50">
@@ -67,8 +69,17 @@
         </thead>
         <tbody>
           {% for record in analytics_history %}
-            <tr class="border-t">
-              <td class="px-4 py-2">{{ record.timestamp|date:'d.m.Y H:i' }}</td>
+            <tr class="border-t hover:bg-gray-100 position-relative">
+              <td class="px-4 py-2">
+                <a href="{% if record.type == 'product' %}
+                    {% url 'product_detail' record.id %}
+                  {% else %}
+                    {% url 'category_detail' record.id %}
+                  {% endif %}"
+                  class="stretched-link">
+                  {{ record.timestamp|date:'d.m.Y H:i' }}
+                </a>
+              </td>
               <td class="px-4 py-2">
                 {% if record.type == 'product' %}
                   Товар
@@ -85,4 +96,6 @@
       <p class="text-gray-500">Нет записей в истории просмотров.</p>
     {% endif %}
   </div>
+  <!-- Подключение JavaScript -->
+  <script type="module" src="{% static 'js/smartpick/utils/clearHistory.js' %}"></script>
 {% endblock %}
