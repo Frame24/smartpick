@@ -11,7 +11,7 @@ if (clearHistoryButton) {
 
         const authToken = await fetchAuthToken(); // Получаем токен перед запросом
         if (!authToken) {
-            alert("Не удалось получить токен авторизации. Попробуйте позже.");
+            ;
             return;
         }
 

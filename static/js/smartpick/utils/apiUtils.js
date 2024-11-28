@@ -12,7 +12,7 @@ export async function toggleFavoriteProduct(productId) {
     try {
         const authToken = await fetchAuthToken(); // Получаем токен перед запросом
         if (!authToken) {
-            alert("Не удалось получить токен авторизации. Попробуйте позже.");
+            ;
             return null;
         }
 
@@ -49,7 +49,7 @@ export async function toggleFavoriteCategory(categoryId) {
     try {
         const authToken = await fetchAuthToken(); // Получаем токен перед запросом
         if (!authToken) {
-            alert("Не удалось получить токен авторизации. Попробуйте позже.");
+            ;
             return null;
         }
 
@@ -87,7 +87,7 @@ export async function isFavorite(productId = null, categoryId = null) {
     try {
         const authToken = await fetchAuthToken(); // Получаем токен перед запросом
         if (!authToken) {
-            alert("Не удалось получить токен авторизации. Попробуйте позже.");
+            ;
             return null;
         }
 
