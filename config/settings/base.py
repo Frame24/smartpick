@@ -363,7 +363,8 @@ ACCOUNT_USERNAME_REQUIRED = False
 # https://docs.allauth.org/en/latest/account/configuration.html
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 # https://docs.allauth.org/en/latest/account/configuration.html
-ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+# ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_EMAIL_VERIFICATION = "optional"  # Или "none" для полного отключения
 # https://docs.allauth.org/en/latest/account/configuration.html
 ACCOUNT_ADAPTER = "smartpick.users.adapters.AccountAdapter"
 # https://docs.allauth.org/en/latest/account/forms.html
