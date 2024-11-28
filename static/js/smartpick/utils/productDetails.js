@@ -19,22 +19,56 @@ export function extractNmIdFromUrl(url) {
     return match ? match[1] : null; // Возвращает ID, если найден, иначе null
 }
 
-export async function fetchProductData(nm_id, baskets) {
-    let foundBasket = null;
-    for (const basket of baskets) {
-        const url = `https://basket-${basket}.wb.ru/vol${Math.floor(nm_id / 1e5)}/part${Math.floor(nm_id / 1e3)}/${nm_id}/info/ru/card.json`;
-        try {
-            const response = await fetch(url);
-            if (response.ok) {
-                foundBasket = basket; // Сохраняем номер корзины
-                return { data: await response.json(), basket: foundBasket }; // Возвращаем данные и номер корзины
+export async function fetchProductData(nm_id, initialBaskets, maxRetries = 10) {
+    let baskets = [...new Set(initialBaskets)]; // Убираем дубли
+    const triedUrls = new Set(); // Храним уже проверенные URL
+
+    for (let retry = 0; retry <= maxRetries; retry++) {
+        // Формируем список URL для текущей попытки, исключая уже проверенные
+        const urls = baskets.map(basket => ({
+            basket,
+            url: `https://basket-${basket}.wb.ru/vol${Math.floor(nm_id / 1e5)}/part${Math.floor(nm_id / 1e3)}/${nm_id}/info/ru/card.json`,
+        })).filter(({ url }) => !triedUrls.has(url));
+
+        // Добавляем новые URL в список проверенных
+        urls.forEach(({ url }) => triedUrls.add(url));
+
+        // Создаем массив промисов
+        const promises = urls.map(async ({ basket, url }) => {
+            try {
+                const response = await fetch(url);
+                if (response.ok) {
+                    return { data: await response.json(), basket };
+                }
+                console.warn(`Data not found in basket ${basket}: ${url}`);
+                throw new Error(`Data not found in basket ${basket}`);
+            } catch (error) {
+                console.error(`Error fetching from basket ${basket}:`, error.message);
+                throw error;
             }
+        });
+
+        try {
+            // Ждем первого успешного промиса
+            return await Promise.any(promises);
         } catch (error) {
-            console.error(`Error fetching data from basket ${basket}:`, error);
+            console.warn(`Attempt ${retry + 1} failed. Retrying...`);
+
+            // Если максимальное число попыток достигнуто, выбрасываем ошибку
+            if (retry === maxRetries) {
+                throw new Error('Data not found in any basket after maximum retries');
+            }
+
+            // Добавляем новые "басткеты" для следующей попытки
+            const maxBasket = Math.max(...baskets);
+            baskets = [...baskets, maxBasket + 1];
         }
     }
-    throw new Error('Data not found in any basket');
 }
+
+
+
+
 
 export function displayProductData(data) {
     document.getElementById('product-category').innerText = `${data.subj_root_name} / ${data.subj_name}`;

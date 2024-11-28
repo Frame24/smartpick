@@ -4,7 +4,7 @@ import { toggleFavoriteProduct, isFavorite } from "../utils/apiUtils.js";
 document.addEventListener('DOMContentLoaded', async () => {
     const productUrl = window.PRODUCT_URL; // Передаётся через Django-шаблон
     const nm_id = extractNmIdFromUrl(productUrl);
-    const baskets = Array.from({ length: 20 }, (_, i) => String(i + 1).padStart(2, '0')); // 20 возможных баскетов
+    const baskets = Array.from({ length: 10 }, (_, i) => String(i + 1).padStart(2, '0')); // 20 возможных баскетов
 
     if (nm_id) {
         fetchProductData(nm_id, baskets)
