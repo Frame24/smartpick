@@ -26,14 +26,36 @@ certificatesResolvers:
 
 http:
   routers:
-    # Django router for smart-pick.ru and asursoft.tech
-    web-secure-router:
-      rule: 'Host(`smart-pick.ru`) || Host(`www.smart-pick.ru`) || Host(`asursoft.tech`) || Host(`www.asursoft.tech`)'
+    # Django router for smart-pick.ru
+    web-secure-router-smart-pick:
+      rule: 'Host(`smart-pick.ru`) || Host(`www.smart-pick.ru`)'
       entryPoints:
         - web-secure
       middlewares:
         - csrf
-      service: django
+      service: django-smart-pick
+      tls:
+        certResolver: letsencrypt  # Используем Let's Encrypt для сертификатов
+
+    # Django router for landing.smart-pick
+    web-secure-router-landing:
+      rule: 'Host(`landing.smart-pick.ru`) || Host(`www.landing.smart-pick.ru`)'
+      entryPoints:
+        - web-secure
+      middlewares:
+        - csrf
+      service: django-landing
+      tls:
+        certResolver: letsencrypt  # Используем Let's Encrypt для сертификатов
+
+    # Django router for asursoft.tech
+    web-secure-router-asursoft:
+      rule: 'Host(`asursoft.tech`) || Host(`www.asursoft.tech`)'
+      entryPoints:
+        - web-secure
+      middlewares:
+        - csrf
+      service: django-asursoft
       tls:
         certResolver: letsencrypt  # Используем Let's Encrypt для сертификатов
 
@@ -63,10 +85,23 @@ http:
         hostsProxyHeaders: ['X-CSRFToken']
 
   services:
-    django:
+    # Service for smart-pick
+    django-smart-pick:
       loadBalancer:
         servers:
-          - url: http://django:5000
+          - url: http://django-smart-pick:5000
+
+    # Service for landing.smart-pick
+    django-landing:
+      loadBalancer:
+        servers:
+          - url: http://django-landing:5000
+
+    # Service for asursoft
+    django-asursoft:
+      loadBalancer:
+        servers:
+          - url: http://django-asursoft:5000
 
     flower:
       loadBalancer:

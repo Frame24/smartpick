@@ -25,6 +25,10 @@ asursoft_patterns = [
     # дополнительные пути, если есть
 ]
 
+landing_smartpick_patterns =[
+    path("", include("smartpick.landing.urls")),
+]
+
 # Общие маршруты, доступные для обоих доменов
 common_patterns = [
     path(settings.ADMIN_URL, admin.site.urls),

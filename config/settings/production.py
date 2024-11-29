@@ -19,7 +19,7 @@ from .base import env
 SECRET_KEY = env("DJANGO_SECRET_KEY")
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = env.list(
-    "DJANGO_ALLOWED_HOSTS", default=["smart-pick.ru", "asursoft.tech"]
+    "DJANGO_ALLOWED_HOSTS", default=["smart-pick.ru", "asursoft.tech", "landing.smart-pick.ru"]
 )
 
 
@@ -180,6 +180,7 @@ sentry_sdk.init(
 # Tools that generate code samples can use SERVERS to point to the correct domain
 SPECTACULAR_SETTINGS["SERVERS"] = [
     {"url": "https://smart-pick.ru", "description": "Production server"},
+    {"url": "https://landing.smart-pick.ru", "description": "Landing Production server"},
     {"url": "https://asursoft.tech", "description": "Asursoft Production server"},
 ]
 # Your stuff...

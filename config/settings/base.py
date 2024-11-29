@@ -91,6 +91,7 @@ THIRD_PARTY_APPS = [
 
 LOCAL_APPS = [
     "smartpick.users",
+    "smartpick.landing",
     "smartpick",
     # Your stuff: custom apps go here
     "asursoft",
@@ -231,6 +232,8 @@ X_FRAME_OPTIONS = "DENY"
 CORS_ALLOWED_ORIGINS = [
     "http://smart-pick.local",
     "https://smart-pick.ru",
+    "http://landing.smart-pick.local",
+    "https://landing.smart-pick.ru",
     "https://asursoft.tech",
     "http://asursoft.local",
     "http://127.0.0.1",
