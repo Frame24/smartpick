@@ -5,6 +5,7 @@ import { loadMoreItems } from './utils/loader';
 import ProductCard from './components/ProductCard';
 import CategoryCard from './components/CategoryCard';
 import SearchBar from './components/SearchBar';
+import LandingPage from './components/LandingPage';
 
 let currentProductPage = 2;
 let hasNextProductPage = true;
@@ -39,6 +40,15 @@ function loadMoreCategories() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Рендерим лендинг, если контейнер с ID "landing-container" существует
+  const landingContainer = document.getElementById('landing-container');
+  if (landingContainer) {
+    const root = createRoot(landingContainer);
+    root.render(<LandingPage />);
+    return; // Прекращаем выполнение, если рендерим лендинг
+  }
+
+  // Рендерим SearchBar, если контейнер с ID "search-bar-container" существует
   const searchBarContainer = document.getElementById('search-bar-container');
   if (searchBarContainer) {
     const root = createRoot(searchBarContainer);
